@@ -33,7 +33,7 @@
       box-shadow: var(--shadow);
       max-width: 600px;
       width: 100%;
-      padding: 30px 35px;
+      padding: 30px 35px 25px;
       color: #fff;
       animation: fadeIn .6s ease-out;
     }
@@ -68,6 +68,36 @@
     }
     .copy-btn { margin-top: 10px; background: rgba(255, 255, 255, 0.25); color: #fff; }
     .copy-btn:hover { background: rgba(255, 255, 255, 0.35); }
+
+    /* AUTHOR */
+    .author-text {
+      text-align: center;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.5px;
+    }
+    .author {
+      text-align: center;
+      margin-top: 0;
+      font-size: 13px;
+    }
+    .author a {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
+      background-size: 400% 400%;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      animation: borderAnimation 4s ease infinite;
+    }
+    @keyframes borderAnimation {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
   </style>
 </head>
 <body>
@@ -99,6 +129,12 @@ IO00885689
 
     <div id="output"></div>
     <button class="copy-btn" onclick="copyOutput()" id="copyBtn" style="display:none;">📋 Salin Hasil</button>
+
+    <!-- AUTHOR -->
+    <div class="author-text">Dibuat oleh</div>
+    <div class="author">
+      <a href="https://andri-land.biz.id/" target="_blank" rel="noopener noreferrer">💻 H3Store</a>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
