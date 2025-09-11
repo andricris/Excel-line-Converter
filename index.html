@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Excel to Line Converter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <style>
+    :root {
+      --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --glass: rgba(255, 255, 255, 0.15);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      --radius: 16px;
+      --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      max-width: 600px;
+      width: 100%;
+      padding: 30px 35px;
+      color: #fff;
+      animation: fadeIn .6s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 { margin-top: 0; text-align: center; font-weight: 600; letter-spacing: 1px; }
+    label { font-size: 14px; margin-bottom: 6px; display: block; }
+    textarea, input[type=text], select {
+      width: 100%; padding: 10px 12px; border: none; border-radius: 8px;
+      font-size: 14px; background: rgba(255, 255, 255, 0.85); color: #333;
+    }
+    textarea { min-height: 160px; resize: vertical; }
+    .row { display: flex; gap: 10px; margin-top: 10px; }
+    .row select, .row input[type=text] { flex: 1; }
+    button {
+      margin-top: 18px; width: 100%; padding: 12px; border: none; border-radius: 8px;
+      background: #fff; color: #764ba2; font-weight: 600; font-size: 15px; cursor: pointer;
+      transition: .3s;
+    }
+    button:hover { background: #f0f0f0; transform: translateY(-2px); }
+    #output {
+      margin-top: 22px; padding: 14px; background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px; word-break: break-all; font-size: 14px; min-height: 50px; display: none;
+    }
+    .copy-btn { margin-top: 10px; background: rgba(255, 255, 255, 0.25); color: #fff; }
+    .copy-btn:hover { background: rgba(255, 255, 255, 0.35); }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Excel → Line Converter</h2>
+
+    <label>Masukkan data dari Excel (copy-paste):</label>
+    <textarea id="input" placeholder="Contoh:
+IO00895128
+IO00885689
+IO00885689
+..."></textarea>
+
+    <label>Pilih atau ketik pembatas:</label>
+    <div class="row">
+      <select id="delimiter">
+        <option value=";">Titik Koma (;)</option>
+        <option value=",">Koma (,)</option>
+        <option value="|">Pipe (|)</option>
+        <option value=" ">Spasi</option>
+        <option value="">Tanpa pembatas</option>
+      </select>
+      <input type="text" id="customDelimiter" placeholder="Manual: -- / ::">
+    </div>
+
+    <button onclick="convert()">Convert</button>
+
+    <div id="output"></div>
+    <button class="copy-btn" onclick="copyOutput()" id="copyBtn" style="display:none;">📋 Salin Hasil</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    async function convert() {
+      const raw = document.getElementById("input").value.trim();
+      if (!raw) {
+        Swal.fire({ icon: 'warning', title: 'Oops...', text: 'Data masih kosong!' });
+        return;
+      }
+
+      Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      const custom = document.getElementById("customDelimiter").value;
+      const delimiter = custom !== "" ? custom : document.getElementById("delimiter").value;
+      const lines = raw.split(/\r?\n/).filter(l => l.trim() !== "");
+      const result = lines.join(delimiter);
+
+      document.getElementById("output").textContent = result;
+      document.getElementById("output").style.display = "block";
+      document.getElementById("copyBtn").style.display = "inline-block";
+
+      await Swal.fire({ icon: 'success', title: 'Selesai!', text: 'Data berhasil digabung.', timer: 1200, showConfirmButton: false });
+    }
+
+    async function copyOutput() {
+      const output = document.getElementById("output").textContent;
+      try {
+        await navigator.clipboard.writeText(output);
+        Swal.fire({ icon: 'success', title: 'Tersalin!', text: 'Hasil sudah ada di clipboard.', timer: 1200, showConfirmButton: false });
+      } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Gagal menyalin', text: err });
+      }
+    }
+  </script>
+
+</body>
+</html>
