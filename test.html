@@ -128,6 +128,12 @@ IO00885689
     const customDelimiterEl = document.getElementById("customDelimiter");
     const outputEl = document.getElementById("output");
     const copyBtnEl = document.getElementById("copyBtn");
+    let pasted = false; // Penanda untuk event paste
+
+    // Tambahkan event listener untuk 'paste'
+    inputEl.addEventListener('paste', () => {
+        pasted = true;
+    });
 
     const processAndAutoCopy = async () => {
       const raw = inputEl.value.trim();
@@ -150,11 +156,25 @@ IO00885689
 
       try {
         await navigator.clipboard.writeText(result);
-        Swal.fire({
-            toast: true, position: 'top-end', icon: 'success',
-            title: 'Tersalin otomatis!', showConfirmButton: false,
-            timer: 1500, timerProgressBar: true
-        });
+        
+        // Cek apakah aksi terakhir adalah 'paste'
+        if (pasted) {
+            // Tampilkan notifikasi khusus untuk paste
+            Swal.fire({
+                icon: 'info',
+                title: 'Sudah Tersalin Otomatis!',
+                text: "Jangan copy / salin lagi karena sudah tersalin, nanti capek tinggal tempel aja.",
+                confirmButtonText: 'Sip, Mengerti!'
+            });
+            pasted = false; // Reset penanda setelah notifikasi ditampilkan
+        } else {
+            // Tampilkan notifikasi toast biasa untuk input lain (ketik manual)
+            Swal.fire({
+                toast: true, position: 'top-end', icon: 'success',
+                title: 'Tersalin otomatis!', showConfirmButton: false,
+                timer: 1500, timerProgressBar: true
+            });
+        }
       } catch (err) {
         console.error("Gagal menyalin otomatis:", err);
       }
@@ -188,4 +208,3 @@ IO00885689
 
 </body>
 </html>
-
