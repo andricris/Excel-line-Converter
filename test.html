@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <title>Excel to Line Converter (Auto + Manual)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- SweetAlert2 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <!-- Animate.css for animations -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <style>
     :root {
       --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -128,9 +131,8 @@ IO00885689
     const customDelimiterEl = document.getElementById("customDelimiter");
     const outputEl = document.getElementById("output");
     const copyBtnEl = document.getElementById("copyBtn");
-    let pasted = false; // Penanda untuk event paste
+    let pasted = false;
 
-    // Tambahkan event listener untuk 'paste'
     inputEl.addEventListener('paste', () => {
         pasted = true;
     });
@@ -157,18 +159,24 @@ IO00885689
       try {
         await navigator.clipboard.writeText(result);
         
-        // Cek apakah aksi terakhir adalah 'paste'
         if (pasted) {
-            // Tampilkan notifikasi khusus untuk paste
             Swal.fire({
-                icon: 'info',
-                title: 'Sudah Tersalin Otomatis!',
-                text: "Jangan copy / salin lagi karena sudah tersalin, nanti capek tinggal tempel aja.",
-                confirmButtonText: 'Sip, Mengerti!'
+                icon: 'success',
+                title: '<span style="font-size: 1.2em;">Berhasil Tersalin!</span>',
+                html: 'Data sudah aman di clipboard.<br><b>Jangan disalin lagi, nanti capek lho!</b> 😉',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                // Custom animation classes
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
             });
-            pasted = false; // Reset penanda setelah notifikasi ditampilkan
+            pasted = false;
         } else {
-            // Tampilkan notifikasi toast biasa untuk input lain (ketik manual)
             Swal.fire({
                 toast: true, position: 'top-end', icon: 'success',
                 title: 'Tersalin otomatis!', showConfirmButton: false,
@@ -208,3 +216,4 @@ IO00885689
 
 </body>
 </html>
+
