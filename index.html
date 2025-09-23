@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Excel to Line Converter</title>
+  <title>Excel to Line Converter (Auto + Manual)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <style>
@@ -59,38 +59,24 @@
     .reset-btn {
       background: rgba(255, 255, 255, 0.25); color: #fff;
     }
-    .reset-btn:hover {
-      background: rgba(255, 255, 255, 0.35);
-    }
+    .reset-btn:hover { background: rgba(255, 255, 255, 0.35); }
     #output {
-      margin-top: 22px; padding: 14px; background: rgba(255, 255, 255, 0.2);
+      margin-top: 22px; padding: 14px; background: rgba(0, 0, 0, 0.2);
       border-radius: 8px; word-break: break-all; font-size: 14px; min-height: 50px; display: none;
     }
-    .copy-btn { margin-top: 10px; background: rgba(255, 255, 255, 0.25); color: #fff; }
+    .copy-btn {
+      margin-top: 10px; background: rgba(255, 255, 255, 0.25); color: #fff;
+    }
     .copy-btn:hover { background: rgba(255, 255, 255, 0.35); }
-
-    /* AUTHOR */
     .author-text {
-      text-align: center;
-      font-size: 13px;
-      margin-bottom: 6px;
-      color: rgba(255,255,255,0.85);
-      letter-spacing: 0.5px;
+      text-align: center; font-size: 13px; margin-top: 25px; margin-bottom: 6px;
+      color: rgba(255,255,255,0.85); letter-spacing: 0.5px;
     }
-    .author {
-      text-align: center;
-      margin-top: 0;
-      font-size: 13px;
-    }
+    .author { text-align: center; margin-top: 0; font-size: 13px; }
     .author a {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 999px;
+      display: inline-block; padding: 6px 14px; border-radius: 999px;
       background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
-      background-size: 400% 400%;
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
+      background-size: 400% 400%; color: #fff; text-decoration: none; font-weight: 600;
       animation: borderAnimation 4s ease infinite;
     }
     @keyframes borderAnimation {
@@ -105,14 +91,14 @@
   <div class="card">
     <h2>Excel → Line Converter</h2>
 
-    <label>Masukkan data dari Excel (copy-paste):</label>
-    <textarea id="input" placeholder="Contoh:
+    <label for="input">Masukkan data dari Excel (copy-paste):</label>
+    <textarea id="input" placeholder="Tempel data di sini...
+Contoh:
 IO00895128
-IO00885689
 IO00885689
 ..."></textarea>
 
-    <label>Pilih atau ketik pembatas:</label>
+    <label for="delimiter">Pilih atau ketik pembatas:</label>
     <div class="row">
       <select id="delimiter">
         <option value=";">Titik Koma (;)</option>
@@ -124,11 +110,9 @@ IO00885689
       <input type="text" id="customDelimiter" placeholder="Manual: -- / ::">
     </div>
 
-    <button onclick="convert()">Convert</button>
-    <button class="reset-btn" onclick="resetAll()">🔄 Mulai Baru</button>
-
     <div id="output"></div>
-    <button class="copy-btn" onclick="copyOutput()" id="copyBtn" style="display:none;">📋 Salin Hasil</button>
+    <button class="copy-btn" onclick="copyManually()" id="copyBtn" style="display:none;">📋 Salin Hasil</button>
+    <button class="reset-btn" onclick="resetAll()">🔄 Mulai Baru</button>
 
     <!-- AUTHOR -->
     <div class="author-text">Dibuat oleh</div>
@@ -139,29 +123,46 @@ IO00885689
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    async function convert() {
-      const raw = document.getElementById("input").value.trim();
+    const inputEl = document.getElementById("input");
+    const delimiterEl = document.getElementById("delimiter");
+    const customDelimiterEl = document.getElementById("customDelimiter");
+    const outputEl = document.getElementById("output");
+    const copyBtnEl = document.getElementById("copyBtn");
+
+    const processAndAutoCopy = async () => {
+      const raw = inputEl.value.trim();
+
       if (!raw) {
-        Swal.fire({ icon: 'warning', title: 'Oops...', text: 'Data masih kosong!' });
+        outputEl.textContent = "";
+        outputEl.style.display = "none";
+        copyBtnEl.style.display = "none";
         return;
       }
 
-      Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-      const custom = document.getElementById("customDelimiter").value;
-      const delimiter = custom !== "" ? custom : document.getElementById("delimiter").value;
+      const custom = customDelimiterEl.value;
+      const delimiter = custom !== "" ? custom : delimiterEl.value;
       const lines = raw.split(/\r?\n/).filter(l => l.trim() !== "");
       const result = lines.join(delimiter);
 
-      document.getElementById("output").textContent = result;
-      document.getElementById("output").style.display = "block";
-      document.getElementById("copyBtn").style.display = "inline-block";
+      outputEl.textContent = result;
+      outputEl.style.display = "block";
+      copyBtnEl.style.display = "inline-block";
 
-      await Swal.fire({ icon: 'success', title: 'Selesai!', text: 'Data berhasil digabung.', timer: 1200, showConfirmButton: false });
-    }
+      try {
+        await navigator.clipboard.writeText(result);
+        Swal.fire({
+            toast: true, position: 'top-end', icon: 'success',
+            title: 'Tersalin otomatis!', showConfirmButton: false,
+            timer: 1500, timerProgressBar: true
+        });
+      } catch (err) {
+        console.error("Gagal menyalin otomatis:", err);
+      }
+    };
 
-    async function copyOutput() {
-      const output = document.getElementById("output").textContent;
+    async function copyManually() {
+      const output = outputEl.textContent;
+      if (!output) return;
       try {
         await navigator.clipboard.writeText(output);
         Swal.fire({ icon: 'success', title: 'Tersalin!', text: 'Hasil sudah ada di clipboard.', timer: 1200, showConfirmButton: false });
@@ -171,14 +172,20 @@ IO00885689
     }
 
     function resetAll() {
-      document.getElementById("input").value = "";
-      document.getElementById("output").textContent = "";
-      document.getElementById("output").style.display = "none";
-      document.getElementById("copyBtn").style.display = "none";
-      document.getElementById("customDelimiter").value = "";
+      inputEl.value = "";
+      outputEl.textContent = "";
+      outputEl.style.display = "none";
+      copyBtnEl.style.display = "none";
+      customDelimiterEl.value = "";
+      delimiterEl.value = ";";
       Swal.fire({ icon: 'info', title: 'Siap!', text: 'Kamu bisa mulai dari awal.', timer: 1000, showConfirmButton: false });
     }
+
+    inputEl.addEventListener('input', processAndAutoCopy);
+    delimiterEl.addEventListener('change', processAndAutoCopy);
+    customDelimiterEl.addEventListener('input', processAndAutoCopy);
   </script>
 
 </body>
 </html>
+
