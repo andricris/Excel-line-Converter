@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <title>Excel to Line Converter (Auto + Manual)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- SweetAlert2 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-  <!-- Animate.css for animations -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <style>
     :root {
@@ -117,7 +115,6 @@ IO00885689
     <button class="copy-btn" onclick="copyManually()" id="copyBtn" style="display:none;">📋 Salin Hasil</button>
     <button class="reset-btn" onclick="resetAll()">🔄 Mulai Baru</button>
 
-    <!-- AUTHOR -->
     <div class="author-text">Dibuat oleh</div>
     <div class="author">
       <a href="https://andri-land.biz.id/" target="_blank" rel="noopener noreferrer">💻 H3Store</a>
@@ -167,7 +164,6 @@ IO00885689
                 timer: 2500,
                 timerProgressBar: true,
                 showConfirmButton: false,
-                // Custom animation classes
                 showClass: {
                     popup: 'animate__animated animate__fadeInDown'
                 },
@@ -206,7 +202,8 @@ IO00885689
       copyBtnEl.style.display = "none";
       customDelimiterEl.value = "";
       delimiterEl.value = ";";
-      Swal.fire({ icon: 'info', title: 'Siap!', text: 'Kamu bisa mulai dari awal.', timer: 1000, showConfirmButton: false });
+      // Baris notifikasi Swal.fire dihapus dari sini
+      inputEl.focus(); // Tambahan: Langsung fokus ke textarea
     }
 
     inputEl.addEventListener('input', processAndAutoCopy);
