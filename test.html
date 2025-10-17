@@ -137,10 +137,9 @@ IO00885689
     const processAndAutoCopy = async () => {
       const raw = inputEl.value.trim();
 
+      // PERUBAHAN 1: Jika input kosong, jangan lakukan apa-apa.
+      // Ini mencegah output terhapus saat kita membersihkan input secara otomatis.
       if (!raw) {
-        outputEl.textContent = "";
-        outputEl.style.display = "none";
-        copyBtnEl.style.display = "none";
         return;
       }
 
@@ -157,10 +156,12 @@ IO00885689
         await navigator.clipboard.writeText(result);
         
         if (pasted) {
+            // PERUBAHAN 2: Menambahkan .then() pada Swal.fire
+            // Kode di dalam .then() akan berjalan SETELAH notifikasi ditutup.
             Swal.fire({
                 icon: 'success',
                 title: '<span style="font-size: 1.2em;">Berhasil Tersalin!</span>',
-                html: 'Data sudah aman di clipboard.<br><b>Jangan disalin lagi, nanti capek lho!</b> 😉',
+                html: 'Data sudah aman di clipboard.<br><b>Siap untuk paste selanjutnya!</b> 😉',
                 timer: 2500,
                 timerProgressBar: true,
                 showConfirmButton: false,
@@ -170,6 +171,9 @@ IO00885689
                 hideClass: {
                     popup: 'animate__animated animate__fadeOutUp'
                 }
+            }).then(() => {
+                // Di sinilah kita membersihkan textarea setelah notifikasi hilang
+                inputEl.value = '';
             });
             pasted = false;
         } else {
@@ -202,8 +206,7 @@ IO00885689
       copyBtnEl.style.display = "none";
       customDelimiterEl.value = "";
       delimiterEl.value = ";";
-      // Baris notifikasi Swal.fire dihapus dari sini
-      inputEl.focus(); // Tambahan: Langsung fokus ke textarea
+      inputEl.focus(); 
     }
 
     inputEl.addEventListener('input', processAndAutoCopy);
