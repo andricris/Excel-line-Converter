@@ -449,9 +449,9 @@
       <h3><i class="fas fa-info-circle"></i> Cara Menggunakan</h3>
       <ol>
         <li>Salin data dari Excel (satu kolom)</li>
-        <li>Tempelkan data ke dalam area teks di bawah</li>
-        <li>Hasil akan <strong>otomatis tersalin ke clipboard</strong></li>
-        <li>Langsung paste (Ctrl+V) ke tujuan</li>
+        <li><strong>Tempelkan data ke dalam area teks di bawah</strong></li>
+        <li><strong>Data akan otomatis hilang dan hasil langsung tersalin!</strong></li>
+        <li>Langsung paste (Ctrl+V) ke aplikasi tujuan Anda</li>
         <li>Aktifkan "Hapus Duplikat" untuk hasil yang bersih</li>
       </ol>
     </div>
@@ -463,12 +463,15 @@
       
       <div class="card-body">
         <div class="form-group">
-          <label class="form-label" for="input"><i class="fas fa-paste"></i> Data dari Excel</label>
+          <label class="form-label" for="input"><i class="fas fa-paste"></i> Tempel Data Excel di Sini</label>
           <textarea 
             id="input" 
             class="form-control" 
-            placeholder="Tempel data Excel Anda di sini...&#10;&#10;Contoh:&#10;IO00895128&#10;IO00885689&#10;IO00875123"
+            placeholder="Tempel (Ctrl+V) data Excel Anda di sini...&#10;&#10;Contoh:&#10;IO00895128&#10;IO00885689&#10;IO00875123"
           ></textarea>
+          <div style="font-size: 12px; color: var(--gray); margin-top: 5px;">
+            <i class="fas fa-info-circle"></i> Data akan otomatis hilang setelah diproses
+          </div>
         </div>
         
         <div class="options-group">
@@ -502,10 +505,7 @@
         <div id="output" class="output-container">
           <div class="output-header">
             <div class="output-title">
-              <i class="fas fa-code"></i> Hasil Konversi
-              <span id="copyStatus" class="copy-status" style="display: none;">
-                <i class="fas fa-check-circle"></i> Tersalin!
-              </span>
+              <i class="fas fa-check-circle" style="color: var(--success);"></i> Hasil Konversi (Sudah Tersalin!)
             </div>
             <div id="charCount" class="char-count"></div>
           </div>
@@ -516,8 +516,8 @@
             <button class="btn btn-success" onclick="copyManually()" id="copyBtn">
               <i class="far fa-copy"></i> Salin Ulang
             </button>
-            <button class="btn btn-secondary" onclick="clearInputOnly()">
-              <i class="fas fa-eraser"></i> Hapus Input
+            <button class="btn btn-secondary" onclick="clearOutputOnly()">
+              <i class="fas fa-eye-slash"></i> Sembunyikan Hasil
             </button>
           </div>
         </div>
@@ -525,7 +525,7 @@
         <div class="stats" id="stats">
           <div class="stat-box">
             <div class="stat-value" id="lineCount">0</div>
-            <div class="stat-label">Baris Asli</div>
+            <div class="stat-label">Baris Diproses</div>
           </div>
           <div class="stat-box">
             <div class="stat-value" id="uniqueCount">0</div>
@@ -542,8 +542,8 @@
         </div>
         
         <div class="buttons-group">
-          <button class="btn btn-primary" onclick="processAndAutoCopy()">
-            <i class="fas fa-sync-alt"></i> Proses Sekarang
+          <button class="btn btn-warning" onclick="processData()">
+            <i class="fas fa-bolt"></i> Proses Manual
           </button>
           <button class="btn btn-secondary" onclick="resetAll()">
             <i class="fas fa-redo"></i> Reset Semua
@@ -573,30 +573,28 @@
     const uniqueCountEl = document.getElementById("uniqueCount");
     const resultLengthEl = document.getElementById("resultLength");
     const delimiterUsedEl = document.getElementById("delimiterUsed");
-    const copyStatusEl = document.getElementById("copyStatus");
     
-    let pasted = false;
-    let lastCopiedText = "";
+    let lastProcessedData = "";
+    let isProcessing = false;
 
-    inputEl.addEventListener('paste', () => {
-        pasted = true;
-        // Delay sedikit untuk memastikan paste sudah selesai
-        setTimeout(() => {
-            processAndAutoCopy();
-        }, 50);
+    // Tangkap event paste
+    inputEl.addEventListener('paste', async (e) => {
+      // Tunggu sebentar agar paste selesai
+      setTimeout(() => {
+        processAndAutoCopy();
+      }, 50);
     });
 
     const processAndAutoCopy = async () => {
       const raw = inputEl.value.trim();
 
-      // Jika input kosong, sembunyikan output
-      if (!raw) {
-        outputEl.style.display = "none";
-        copyStatusEl.style.display = "none";
-        updateStats(0, 0, 0, "-");
+      // Jika input kosong, jangan lakukan apa-apa
+      if (!raw || isProcessing) {
         return;
       }
 
+      isProcessing = true;
+      
       const custom = customDelimiterEl.value;
       const delimiter = custom !== "" ? custom : delimiterEl.value;
       let lines = raw.split(/\r?\n/).filter(l => l.trim() !== "");
@@ -610,6 +608,7 @@
       
       const uniqueCount = lines.length;
       const result = lines.join(delimiter);
+      lastProcessedData = result;
 
       // Tampilkan hasil
       outputContentEl.textContent = result;
@@ -620,58 +619,70 @@
       updateStats(originalCount, uniqueCount, result.length, delimiter);
 
       try {
-        // SALIN OTOMATIS ke clipboard - LOGIKA UTAMA
+        // SALIN OTOMATIS ke clipboard
         await navigator.clipboard.writeText(result);
-        lastCopiedText = result;
         
-        // Tampilkan status copy berhasil
-        copyStatusEl.style.display = "flex";
-        copyStatusEl.style.color = "#10b981";
-        copyStatusEl.innerHTML = '<i class="fas fa-check-circle"></i> Tersalin ke clipboard!';
+        // KOSONGKAN TEXTAREA (sesuai permintaan Anda)
+        inputEl.value = "";
         
-        // Toast notification
-        if (pasted) {
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            title: 'Berhasil!',
-            html: `<div style="text-align: left;">
-                  <p><b>${originalCount} baris</b> data diproses.</p>
-                  ${originalCount !== uniqueCount ? 
-                    `<p><span style="color: #10b981; font-weight: 600;">${originalCount - uniqueCount} duplikat dihapus</span></p>` : 
-                    ''}
-                  <p><small>Sekarang bisa langsung paste (Ctrl+V)</small></p>
-                  </div>`,
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
-          });
-          pasted = false;
-        }
-        
-        // Auto-hide copy status setelah 5 detik
-        setTimeout(() => {
-          copyStatusEl.style.display = "none";
-        }, 5000);
+        // Tampilkan notifikasi sukses
+        Swal.fire({
+          icon: 'success',
+          title: '<span style="font-size: 1.2em;">Berhasil Tersalin!</span>',
+          html: `<div style="text-align: left;">
+                <p><b>${originalCount} baris</b> data telah dikonversi.</p>
+                ${originalCount !== uniqueCount ? 
+                  `<p><span style="color: #10b981; font-weight: 600;">${originalCount - uniqueCount} duplikat dihapus</span></p>` : 
+                  ''}
+                <p>Hasil sudah <b>otomatis tersalin</b> ke clipboard.</p>
+                <p><small>Pembatas: <code>${delimiter === ' ' ? '[Spasi]' : delimiter === '\n' ? '[Baris Baru]' : delimiter || '[Tidak Ada]'}</code></small></p>
+                <p><i>Sekarang langsung paste (Ctrl+V) ke Excel atau aplikasi lain!</i></p>
+                </div>`,
+          timer: 3500,
+          timerProgressBar: true,
+          showConfirmButton: false,
+          showClass: {
+              popup: 'animate__animated animate__fadeInDown'
+          },
+          hideClass: {
+              popup: 'animate__animated animate__fadeOutUp'
+          }
+        }).then(() => {
+          // Fokus kembali ke input untuk penggunaan berikutnya
+          inputEl.focus();
+        });
         
       } catch (err) {
         console.error("Gagal menyalin otomatis:", err);
-        copyStatusEl.style.display = "flex";
-        copyStatusEl.style.color = "#f59e0b";
-        copyStatusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal salin otomatis';
         
+        // Fallback jika auto-copy gagal
         Swal.fire({
-          toast: true,
-          position: 'top-end',
           icon: 'warning',
-          title: 'Gagal salin otomatis',
-          text: 'Gunakan tombol "Salin Ulang"',
-          showConfirmButton: false,
-          timer: 2000
+          title: 'Hasil Siap',
+          html: `<p>Data telah diproses tetapi tidak bisa disalin otomatis.</p>
+                <p>Silakan gunakan tombol <b>"Salin Ulang"</b> di bawah.</p>`,
+          timer: 3000,
+          showConfirmButton: false
         });
       }
+      
+      isProcessing = false;
     };
+
+    // Fungsi untuk proses manual
+    function processData() {
+      if (inputEl.value.trim()) {
+        processAndAutoCopy();
+      } else {
+        Swal.fire({
+          icon: 'info',
+          title: 'Data kosong',
+          text: 'Silakan masukkan data terlebih dahulu',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    }
 
     function updateStats(originalCount, uniqueCount, charCount, delimiter) {
       lineCountEl.textContent = originalCount;
@@ -700,15 +711,20 @@
     }
 
     async function copyManually() {
-      const output = outputContentEl.textContent || lastCopiedText;
-      if (!output) return;
+      const output = outputContentEl.textContent || lastProcessedData;
+      if (!output) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Tidak ada data',
+          text: 'Tidak ada hasil yang bisa disalin',
+          timer: 1500,
+          showConfirmButton: false
+        });
+        return;
+      }
+      
       try {
         await navigator.clipboard.writeText(output);
-        lastCopiedText = output;
-        
-        copyStatusEl.style.display = "flex";
-        copyStatusEl.style.color = "#10b981";
-        copyStatusEl.innerHTML = '<i class="fas fa-check-circle"></i> Tersalin!';
         
         Swal.fire({
           toast: true,
@@ -720,11 +736,6 @@
           timer: 1500
         });
         
-        // Auto-hide copy status setelah 5 detik
-        setTimeout(() => {
-          copyStatusEl.style.display = "none";
-        }, 5000);
-        
       } catch (err) {
         Swal.fire({ 
           icon: 'error', 
@@ -734,19 +745,16 @@
       }
     }
 
-    function clearInputOnly() {
-      inputEl.value = "";
-      inputEl.focus();
+    function clearOutputOnly() {
       outputEl.style.display = "none";
-      copyStatusEl.style.display = "none";
+      outputContentEl.textContent = "";
       updateStats(0, 0, 0, "-");
       
       Swal.fire({
         toast: true,
         position: 'top-end',
         icon: 'info',
-        title: 'Input dihapus',
-        text: 'Data input telah dibersihkan',
+        title: 'Hasil disembunyikan',
         showConfirmButton: false,
         timer: 1500
       });
@@ -759,8 +767,7 @@
       customDelimiterEl.value = "";
       delimiterEl.value = ";";
       removeDuplicatesEl.checked = true;
-      copyStatusEl.style.display = "none";
-      lastCopiedText = "";
+      lastProcessedData = "";
       updateStats(0, 0, 0, "-");
       inputEl.focus();
       
@@ -768,64 +775,60 @@
         toast: true,
         position: 'top-end',
         icon: 'info',
-        title: 'Reset berhasil',
-        text: 'Semua data telah direset',
+        title: 'Semua data direset',
+        text: 'Siap untuk data baru',
         showConfirmButton: false,
         timer: 1500
       });
     }
 
-    // Event listeners untuk auto-process saat ada perubahan
-    inputEl.addEventListener('input', () => {
-        if (inputEl.value.trim()) {
-            processAndAutoCopy();
-        } else if (!inputEl.value.trim()) {
-            outputEl.style.display = "none";
-            copyStatusEl.style.display = "none";
-            updateStats(0, 0, 0, "-");
-        }
-    });
-    
+    // Auto-process saat delimiter berubah (hanya jika ada data di textarea)
     delimiterEl.addEventListener('change', () => {
-        if (inputEl.value.trim()) {
-            processAndAutoCopy();
-        }
+      if (inputEl.value.trim()) {
+        processAndAutoCopy();
+      }
     });
     
     customDelimiterEl.addEventListener('input', () => {
-        if (inputEl.value.trim()) {
-            processAndAutoCopy();
-        }
+      if (inputEl.value.trim()) {
+        processAndAutoCopy();
+      }
     });
     
     removeDuplicatesEl.addEventListener('change', () => {
-        if (inputEl.value.trim()) {
-            processAndAutoCopy();
-        }
+      if (inputEl.value.trim()) {
+        processAndAutoCopy();
+      }
     });
-    
-    // Tambahkan keyboard shortcut untuk clear input
-    document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key === 'Delete') {
-            clearInputOnly();
-            e.preventDefault();
-        }
-    });
+
+    // Auto-process saat mengetik (opsional, bisa diaktifkan)
+    // inputEl.addEventListener('input', () => {
+    //   if (inputEl.value.trim()) {
+    //     // Debounce untuk menghindari proses berulang
+    //     clearTimeout(window.inputTimeout);
+    //     window.inputTimeout = setTimeout(() => {
+    //       processAndAutoCopy();
+    //     }, 1000);
+    //   } else {
+    //     outputEl.style.display = "none";
+    //     updateStats(0, 0, 0, "-");
+    //   }
+    // });
     
     // Inisialisasi stats
     updateStats(0, 0, 0, "-");
     
-    // Info shortcut keyboard
+    // Info saat pertama kali load
     setTimeout(() => {
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'info',
-            title: 'Tips',
-            html: '<small>Ctrl+Delete: Hapus input<br>Hasil otomatis tersalin!</small>',
-            showConfirmButton: false,
-            timer: 3000
-        });
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'info',
+        title: 'Siap digunakan!',
+        html: '<small>Tempel data Excel → Hasil otomatis tersalin!</small>',
+        showConfirmButton: false,
+        timer: 3000
+      });
     }, 1000);
   </script>
 </body>
