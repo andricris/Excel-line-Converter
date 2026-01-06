@@ -2,122 +2,543 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Excel to Line Converter (Auto + Manual)</title>
+  <title>Excel to Line Converter - Enterprise Tool</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <style>
     :root {
-      --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --glass: rgba(255, 255, 255, 0.15);
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-      --radius: 16px;
-      --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #475569;
+      --accent: #3b82f6;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --gray: #64748b;
+      --gray-light: #e2e8f0;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --border-radius: 10px;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      --shadow-hover: 0 15px 30px rgba(0, 0, 0, 0.12);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
-    * { box-sizing: border-box; }
-    body {
+    
+    * { 
+      box-sizing: border-box; 
       margin: 0;
-      font-family: var(--font);
-      background: var(--bg);
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      color: var(--dark);
       min-height: 100vh;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .logo {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      gap: 12px;
+      margin-bottom: 15px;
     }
-    .card {
-      background: var(--glass);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: var(--radius);
+    
+    .logo-icon {
+      background: var(--primary);
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
       box-shadow: var(--shadow);
+    }
+    
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+    
+    .subtitle {
+      font-size: 16px;
+      color: var(--gray);
       max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .main-card {
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    
+    .main-card:hover {
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .card-header {
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: white;
+      padding: 20px 30px;
+    }
+    
+    .card-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .card-body {
+      padding: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+    
+    .form-label i {
+      margin-right: 8px;
+      color: var(--primary);
+    }
+    
+    .form-control {
       width: 100%;
-      padding: 30px 35px 25px;
-      color: #fff;
-      animation: fadeIn .6s ease-out;
+      padding: 14px 18px;
+      border: 2px solid var(--gray-light);
+      border-radius: var(--border-radius);
+      font-size: 15px;
+      transition: var(--transition);
+      background-color: white;
+      color: var(--dark);
     }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    textarea.form-control {
+      min-height: 180px;
+      resize: vertical;
+      font-family: 'Segoe UI', monospace;
+      line-height: 1.5;
+    }
+    
+    .options-group {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+    
+    .option-box {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+      gap: 10px;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+    }
+    
+    .checkbox-group label {
+      font-size: 14px;
+      color: var(--dark);
+      cursor: pointer;
+      user-select: none;
+    }
+    
+    .output-container {
+      background-color: #f8fafc;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-top: 30px;
+      border-left: 4px solid var(--primary);
+      display: none;
+    }
+    
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .output-title {
+      font-weight: 600;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .output-content {
+      background-color: white;
+      border: 1px solid var(--gray-light);
+      border-radius: 8px;
+      padding: 18px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      word-break: break-all;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      white-space: pre-wrap;
+    }
+    
+    .buttons-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 14px 24px;
+      border-radius: var(--border-radius);
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 180px;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background-color: white;
+      color: var(--dark);
+      border: 2px solid var(--gray-light);
+    }
+    
+    .btn-secondary:hover {
+      background-color: #f8fafc;
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    
+    .btn-success {
+      background-color: var(--success);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background-color: #0da271;
+      transform: translateY(-2px);
+    }
+    
+    .btn-warning {
+      background-color: var(--warning);
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background-color: #d97706;
+      transform: translateY(-2px);
+    }
+    
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      color: var(--gray);
+      font-size: 14px;
+      padding-top: 20px;
+      border-top: 1px solid var(--gray-light);
+    }
+    
+    .author-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    
+    .author-link:hover {
+      text-decoration: underline;
+    }
+    
+    .instructions {
+      background-color: #f0f9ff;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-bottom: 30px;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .instructions h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--dark);
+      margin-bottom: 15px;
+    }
+    
+    .instructions ol {
+      padding-left: 20px;
+      color: var(--gray);
+    }
+    
+    .instructions li {
+      margin-bottom: 8px;
+    }
+    
+    .stats {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .stat-box {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 15px;
+      flex: 1;
+      min-width: 150px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .stat-label {
+      font-size: 13px;
+      color: var(--gray);
+      margin-top: 5px;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    
+    .badge-success {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+    
+    .badge-warning {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .card-body {
+        padding: 20px;
+      }
+      
+      .options-group {
+        flex-direction: column;
+      }
+      
+      .buttons-group {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+    
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-    h2 { margin-top: 0; text-align: center; font-weight: 600; letter-spacing: 1px; }
-    label { font-size: 14px; margin-bottom: 6px; display: block; }
-    textarea, input[type=text], select {
-      width: 100%; padding: 10px 12px; border: none; border-radius: 8px;
-      font-size: 14px; background: rgba(255, 255, 255, 0.85); color: #333;
-    }
-    textarea { min-height: 160px; resize: vertical; }
-    .row { display: flex; gap: 10px; margin-top: 10px; }
-    .row select, .row input[type=text] { flex: 1; }
-    button {
-      margin-top: 12px; width: 100%; padding: 12px; border: none; border-radius: 8px;
-      background: #fff; color: #764ba2; font-weight: 600; font-size: 15px; cursor: pointer;
-      transition: .3s;
-    }
-    button:hover { background: #f0f0f0; transform: translateY(-2px); }
-    .reset-btn {
-      background: rgba(255, 255, 255, 0.25); color: #fff;
-    }
-    .reset-btn:hover { background: rgba(255, 255, 255, 0.35); }
-    #output {
-      margin-top: 22px; padding: 14px; background: rgba(0, 0, 0, 0.2);
-      border-radius: 8px; word-break: break-all; font-size: 14px; min-height: 50px; display: none;
-    }
-    .copy-btn {
-      margin-top: 10px; background: rgba(255, 255, 255, 0.25); color: #fff;
-    }
-    .copy-btn:hover { background: rgba(255, 255, 255, 0.35); }
-    .author-text {
-      text-align: center; font-size: 13px; margin-top: 25px; margin-bottom: 6px;
-      color: rgba(255,255,255,0.85); letter-spacing: 0.5px;
-    }
-    .author { text-align: center; margin-top: 0; font-size: 13px; }
-    .author a {
-      display: inline-block; padding: 6px 14px; border-radius: 999px;
-      background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
-      background-size: 400% 400%; color: #fff; text-decoration: none; font-weight: 600;
-      animation: borderAnimation 4s ease infinite;
-    }
-    @keyframes borderAnimation {
-      0%   { background-position: 0% 50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
     }
   </style>
 </head>
 <body>
-
-  <div class="card">
-    <h2>Excel → Line Converter</h2>
-
-    <label for="input">Masukkan data dari Excel (copy-paste):</label>
-    <textarea id="input" placeholder="Tempel data di sini...
-Contoh:
-IO00895128
-IO00885689
-..."></textarea>
-
-    <label for="delimiter">Pilih atau ketik pembatas:</label>
-    <div class="row">
-      <select id="delimiter">
-        <option value=";">Titik Koma (;)</option>
-        <option value=",">Koma (,)</option>
-        <option value="|">Pipe (|)</option>
-        <option value=" ">Spasi</option>
-        <option value="">Tanpa pembatas</option>
-      </select>
-      <input type="text" id="customDelimiter" placeholder="Manual: -- / ::">
+  <div class="container">
+    <div class="header animate__animated animate__fadeIn">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-file-excel"></i>
+        </div>
+        <div>
+          <h1>Excel to Line Converter</h1>
+          <p class="subtitle">Enterprise tool untuk mengonversi data Excel menjadi format satu baris dengan pembatas kustom</p>
+        </div>
+      </div>
     </div>
-
-    <div id="output"></div>
-    <button class="copy-btn" onclick="copyManually()" id="copyBtn" style="display:none;">📋 Salin Hasil</button>
-    <button class="reset-btn" onclick="resetAll()">🔄 Mulai Baru</button>
-
-    <div class="author-text">Dibuat oleh</div>
-    <div class="author">
-      <a href="https://andri-land.biz.id/" target="_blank" rel="noopener noreferrer">💻 H3Store</a>
+    
+    <div class="instructions animate__animated animate__fadeIn animate__delay-1s">
+      <h3><i class="fas fa-info-circle"></i> Cara Menggunakan</h3>
+      <ol>
+        <li>Salin data dari Excel (satu kolom)</li>
+        <li>Tempelkan data ke dalam area teks di bawah</li>
+        <li>Pilih atau ketik pembatas yang diinginkan</li>
+        <li>Hasil akan otomatis tersalin ke clipboard dan siap untuk paste</li>
+        <li>Aktifkan "Hapus Duplikat" untuk menghilangkan data yang sama</li>
+      </ol>
+    </div>
+    
+    <div class="main-card animate__animated animate__fadeIn animate__delay-2s">
+      <div class="card-header">
+        <h2><i class="fas fa-exchange-alt"></i> Konversi Data</h2>
+      </div>
+      
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label" for="input"><i class="fas fa-paste"></i> Data dari Excel</label>
+          <textarea 
+            id="input" 
+            class="form-control" 
+            placeholder="Tempel data Excel Anda di sini...&#10;&#10;Contoh:&#10;IO00895128&#10;IO00885689&#10;IO00875123"
+          ></textarea>
+        </div>
+        
+        <div class="options-group">
+          <div class="option-box">
+            <label class="form-label" for="delimiter"><i class="fas fa-slash"></i> Pembatas</label>
+            <select id="delimiter" class="form-control">
+              <option value=";">Titik Koma (;)</option>
+              <option value=",">Koma (,)</option>
+              <option value="|">Pipe (|)</option>
+              <option value=" ">Spasi</option>
+              <option value="\n">Baris Baru</option>
+              <option value="">Tanpa pembatas</option>
+            </select>
+          </div>
+          <div class="option-box">
+            <label class="form-label" for="customDelimiter"><i class="fas fa-edit"></i> Pembatas Kustom</label>
+            <input 
+              type="text" 
+              id="customDelimiter" 
+              class="form-control" 
+              placeholder="Ketik pembatas kustom (contoh: -- / :: / -)"
+            >
+          </div>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="removeDuplicates" checked>
+          <label for="removeDuplicates">Hapus data duplikat dari hasil</label>
+        </div>
+        
+        <div id="output" class="output-container">
+          <div class="output-header">
+            <div class="output-title">
+              <i class="fas fa-code"></i> Hasil Konversi
+            </div>
+            <div id="charCount" class="char-count"></div>
+          </div>
+          <div id="outputContent" class="output-content">
+            <!-- Hasil akan muncul di sini -->
+          </div>
+          <button class="btn btn-success" onclick="copyManually()" id="copyBtn">
+            <i class="far fa-copy"></i> Salin Hasil
+          </button>
+        </div>
+        
+        <div class="stats" id="stats">
+          <div class="stat-box">
+            <div class="stat-value" id="lineCount">0</div>
+            <div class="stat-label">Baris Asli</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="uniqueCount">0</div>
+            <div class="stat-label">Baris Unik</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="resultLength">0</div>
+            <div class="stat-label">Karakter Hasil</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="delimiterUsed">-</div>
+            <div class="stat-label">Pembatas Aktif</div>
+          </div>
+        </div>
+        
+        <div class="buttons-group">
+          <button class="btn btn-warning" onclick="processAndAutoCopy()">
+            <i class="fas fa-magic"></i> Proses & Auto-Copy
+          </button>
+          <button class="btn btn-secondary" onclick="resetAll()">
+            <i class="fas fa-redo"></i> Reset Semua
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer animate__animated animate__fadeIn animate__delay-3s">
+      <p>Tool Enterprise &copy; 2023 - Excel to Line Converter</p>
+      <a href="https://andri-land.biz.id/" target="_blank" rel="noopener noreferrer" class="author-link">
+        <i class="fas fa-external-link-alt"></i> H3Store Enterprise Solutions
+      </a>
     </div>
   </div>
 
@@ -127,42 +548,78 @@ IO00885689
     const delimiterEl = document.getElementById("delimiter");
     const customDelimiterEl = document.getElementById("customDelimiter");
     const outputEl = document.getElementById("output");
+    const outputContentEl = document.getElementById("outputContent");
     const copyBtnEl = document.getElementById("copyBtn");
+    const removeDuplicatesEl = document.getElementById("removeDuplicates");
+    const lineCountEl = document.getElementById("lineCount");
+    const uniqueCountEl = document.getElementById("uniqueCount");
+    const resultLengthEl = document.getElementById("resultLength");
+    const delimiterUsedEl = document.getElementById("delimiterUsed");
+    
     let pasted = false;
+    let autoProcessEnabled = true;
 
     inputEl.addEventListener('paste', () => {
         pasted = true;
+        // Delay sedikit untuk memastikan paste sudah selesai
+        setTimeout(() => {
+            if (autoProcessEnabled) {
+                processAndAutoCopy();
+            }
+        }, 100);
     });
 
     const processAndAutoCopy = async () => {
       const raw = inputEl.value.trim();
 
-      // PERUBAHAN 1: Jika input kosong, jangan lakukan apa-apa.
-      // Ini mencegah output terhapus saat kita membersihkan input secara otomatis.
+      // Jika input kosong, sembunyikan output
       if (!raw) {
+        outputEl.style.display = "none";
+        updateStats(0, 0, 0, "-");
         return;
       }
 
       const custom = customDelimiterEl.value;
       const delimiter = custom !== "" ? custom : delimiterEl.value;
-      const lines = raw.split(/\r?\n/).filter(l => l.trim() !== "");
+      let lines = raw.split(/\r?\n/).filter(l => l.trim() !== "");
+      const originalCount = lines.length;
+      
+      // Hapus duplikat jika checkbox dicentang
+      if (removeDuplicatesEl.checked) {
+        const uniqueSet = new Set(lines);
+        lines = Array.from(uniqueSet);
+      }
+      
+      const uniqueCount = lines.length;
       const result = lines.join(delimiter);
 
-      outputEl.textContent = result;
+      // Tampilkan hasil
+      outputContentEl.textContent = result;
       outputEl.style.display = "block";
-      copyBtnEl.style.display = "inline-block";
+      outputEl.classList.add("animate-fade-in");
+      
+      // Update statistik
+      updateStats(originalCount, uniqueCount, result.length, delimiter);
 
       try {
+        // SALIN OTOMATIS ke clipboard - LOGIKA UTAMA ANDA
         await navigator.clipboard.writeText(result);
         
         if (pasted) {
-            // PERUBAHAN 2: Menambahkan .then() pada Swal.fire
-            // Kode di dalam .then() akan berjalan SETELAH notifikasi ditutup.
+            // Tampilkan notifikasi untuk paste
             Swal.fire({
                 icon: 'success',
-                title: '<span style="font-size: 1.2em;">Berhasil Tersalin!</span>',
-                html: 'Data sudah aman di clipboard.<br><b>Siap untuk paste selanjutnya!</b> 😉',
-                timer: 2500,
+                title: '<span style="font-size: 1.2em;">Berhasil!</span>',
+                html: `<div style="text-align: left;">
+                      <p><b>${originalCount} baris</b> data telah diproses.</p>
+                      ${originalCount !== uniqueCount ? 
+                        `<p><span class="badge badge-success">${originalCount - uniqueCount} duplikat dihapus</span></p>` : 
+                        ''}
+                      <p>Hasil telah <b>otomatis tersalin</b> ke clipboard.</p>
+                      <p><small>Pembatas: <code>${delimiter === ' ' ? '[Spasi]' : delimiter || '[Tidak Ada]'}</code></small></p>
+                      <p><i>Sekarang Anda bisa langsung paste (Ctrl+V) ke Excel atau aplikasi lain!</i></p>
+                      </div>`,
+                timer: 3500,
                 timerProgressBar: true,
                 showConfirmButton: false,
                 showClass: {
@@ -172,47 +629,164 @@ IO00885689
                     popup: 'animate__animated animate__fadeOutUp'
                 }
             }).then(() => {
-                // Di sinilah kita membersihkan textarea setelah notifikasi hilang
+                // Membersihkan textarea setelah notifikasi hilang
                 inputEl.value = '';
+                pasted = false;
             });
-            pasted = false;
         } else {
+            // Untuk input manual (bukan paste)
             Swal.fire({
-                toast: true, position: 'top-end', icon: 'success',
-                title: 'Tersalin otomatis!', showConfirmButton: false,
-                timer: 1500, timerProgressBar: true
+                toast: true, 
+                position: 'top-end', 
+                icon: 'success',
+                title: 'Diperbarui & Disalin!', 
+                text: 'Hasil otomatis tersalin ke clipboard',
+                showConfirmButton: false,
+                timer: 2000, 
+                timerProgressBar: true
             });
         }
+        
+        // Fokus kembali ke input untuk kemudahan penggunaan
+        setTimeout(() => {
+            inputEl.focus();
+        }, 100);
+        
       } catch (err) {
         console.error("Gagal menyalin otomatis:", err);
+        // Fallback: tampilkan pesan untuk salin manual
+        Swal.fire({
+          icon: 'warning',
+          title: 'Hasil Siap',
+          html: `<p>Hasil telah diproses tetapi tidak bisa disalin otomatis.</p>
+                <p>Silakan gunakan tombol <b>"Salin Hasil"</b> di bawah.</p>`,
+          timer: 3000,
+          showConfirmButton: false
+        });
       }
     };
 
+    function updateStats(originalCount, uniqueCount, charCount, delimiter) {
+      lineCountEl.textContent = originalCount;
+      uniqueCountEl.textContent = uniqueCount;
+      resultLengthEl.textContent = charCount;
+      
+      // Tampilkan pembatas dengan format yang lebih baik
+      let delimiterDisplay = "-";
+      if (delimiter === ' ') {
+        delimiterDisplay = "[Spasi]";
+      } else if (delimiter === '\n') {
+        delimiterDisplay = "[Baris Baru]";
+      } else if (delimiter === '') {
+        delimiterDisplay = "[Tidak Ada]";
+      } else if (delimiter) {
+        delimiterDisplay = delimiter;
+      }
+      delimiterUsedEl.textContent = delimiterDisplay;
+      
+      // Tambahkan badge jika ada duplikat yang dihapus
+      if (originalCount > uniqueCount && removeDuplicatesEl.checked) {
+        uniqueCountEl.innerHTML = `${uniqueCount} <span class="badge badge-success">-${originalCount - uniqueCount}</span>`;
+      }
+    }
+
     async function copyManually() {
-      const output = outputEl.textContent;
+      const output = outputContentEl.textContent;
       if (!output) return;
       try {
         await navigator.clipboard.writeText(output);
-        Swal.fire({ icon: 'success', title: 'Tersalin!', text: 'Hasil sudah ada di clipboard.', timer: 1200, showConfirmButton: false });
+        Swal.fire({
+          icon: 'success',
+          title: 'Tersalin!',
+          text: 'Hasil telah disalin ke clipboard.',
+          timer: 1200,
+          showConfirmButton: false
+        });
       } catch (err) {
-        Swal.fire({ icon: 'error', title: 'Gagal menyalin', text: err });
+        Swal.fire({ 
+          icon: 'error', 
+          title: 'Gagal menyalin', 
+          text: 'Coba salin secara manual dari area hasil.' 
+        });
       }
     }
 
     function resetAll() {
       inputEl.value = "";
-      outputEl.textContent = "";
+      outputContentEl.textContent = "";
       outputEl.style.display = "none";
-      copyBtnEl.style.display = "none";
       customDelimiterEl.value = "";
       delimiterEl.value = ";";
-      inputEl.focus(); 
+      removeDuplicatesEl.checked = true;
+      updateStats(0, 0, 0, "-");
+      inputEl.focus();
+      
+      Swal.fire({
+        icon: 'info',
+        title: 'Direset',
+        text: 'Semua data telah dihapus. Siap untuk input baru.',
+        timer: 1500,
+        showConfirmButton: false
+      });
     }
 
-    inputEl.addEventListener('input', processAndAutoCopy);
-    delimiterEl.addEventListener('change', processAndAutoCopy);
-    customDelimiterEl.addEventListener('input', processAndAutoCopy);
+    // Event listeners untuk auto-process saat ada perubahan
+    inputEl.addEventListener('input', () => {
+        if (autoProcessEnabled && inputEl.value.trim()) {
+            processAndAutoCopy();
+        } else if (!inputEl.value.trim()) {
+            outputEl.style.display = "none";
+            updateStats(0, 0, 0, "-");
+        }
+    });
+    
+    delimiterEl.addEventListener('change', () => {
+        if (autoProcessEnabled && inputEl.value.trim()) {
+            processAndAutoCopy();
+        }
+    });
+    
+    customDelimiterEl.addEventListener('input', () => {
+        if (autoProcessEnabled && inputEl.value.trim()) {
+            processAndAutoCopy();
+        }
+    });
+    
+    removeDuplicatesEl.addEventListener('change', () => {
+        if (autoProcessEnabled && inputEl.value.trim()) {
+            processAndAutoCopy();
+        }
+    });
+    
+    // Toggle untuk auto-process
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'm') {
+            autoProcessEnabled = !autoProcessEnabled;
+            Swal.fire({
+                icon: autoProcessEnabled ? 'success' : 'info',
+                title: autoProcessEnabled ? 'Auto-Process Diaktifkan' : 'Auto-Process Dinonaktifkan',
+                text: `Tekan Ctrl+M lagi untuk ${autoProcessEnabled ? 'menonaktifkan' : 'mengaktifkan'}`,
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+    });
+    
+    // Inisialisasi stats
+    updateStats(0, 0, 0, "-");
+    
+    // Info shortcut keyboard
+    setTimeout(() => {
+        Swal.fire({
+            icon: 'info',
+            title: 'Tips Penggunaan',
+            html: `<p><b>Ctrl+M</b> untuk toggle auto-process</p>
+                  <p><b>Ctrl+V</b> untuk paste data</p>
+                  <p>Hasil akan otomatis tersalin ke clipboard</p>`,
+            timer: 3000,
+            showConfirmButton: false
+        });
+    }, 2000);
   </script>
-
 </body>
 </html>
