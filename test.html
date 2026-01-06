@@ -389,6 +389,16 @@
       color: #92400e;
     }
     
+    .copy-status {
+      font-size: 12px;
+      color: var(--success);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 5px;
+    }
+    
     @media (max-width: 768px) {
       .container {
         padding: 10px;
@@ -440,9 +450,9 @@
       <ol>
         <li>Salin data dari Excel (satu kolom)</li>
         <li>Tempelkan data ke dalam area teks di bawah</li>
-        <li>Pilih atau ketik pembatas yang diinginkan</li>
-        <li>Hasil akan otomatis tersalin ke clipboard dan siap untuk paste</li>
-        <li>Aktifkan "Hapus Duplikat" untuk menghilangkan data yang sama</li>
+        <li>Hasil akan <strong>otomatis tersalin ke clipboard</strong></li>
+        <li>Langsung paste (Ctrl+V) ke tujuan</li>
+        <li>Aktifkan "Hapus Duplikat" untuk hasil yang bersih</li>
       </ol>
     </div>
     
@@ -493,15 +503,23 @@
           <div class="output-header">
             <div class="output-title">
               <i class="fas fa-code"></i> Hasil Konversi
+              <span id="copyStatus" class="copy-status" style="display: none;">
+                <i class="fas fa-check-circle"></i> Tersalin!
+              </span>
             </div>
             <div id="charCount" class="char-count"></div>
           </div>
           <div id="outputContent" class="output-content">
             <!-- Hasil akan muncul di sini -->
           </div>
-          <button class="btn btn-success" onclick="copyManually()" id="copyBtn">
-            <i class="far fa-copy"></i> Salin Hasil
-          </button>
+          <div class="buttons-group">
+            <button class="btn btn-success" onclick="copyManually()" id="copyBtn">
+              <i class="far fa-copy"></i> Salin Ulang
+            </button>
+            <button class="btn btn-secondary" onclick="clearInputOnly()">
+              <i class="fas fa-eraser"></i> Hapus Input
+            </button>
+          </div>
         </div>
         
         <div class="stats" id="stats">
@@ -524,8 +542,8 @@
         </div>
         
         <div class="buttons-group">
-          <button class="btn btn-warning" onclick="processAndAutoCopy()">
-            <i class="fas fa-magic"></i> Proses & Auto-Copy
+          <button class="btn btn-primary" onclick="processAndAutoCopy()">
+            <i class="fas fa-sync-alt"></i> Proses Sekarang
           </button>
           <button class="btn btn-secondary" onclick="resetAll()">
             <i class="fas fa-redo"></i> Reset Semua
@@ -555,18 +573,17 @@
     const uniqueCountEl = document.getElementById("uniqueCount");
     const resultLengthEl = document.getElementById("resultLength");
     const delimiterUsedEl = document.getElementById("delimiterUsed");
+    const copyStatusEl = document.getElementById("copyStatus");
     
     let pasted = false;
-    let autoProcessEnabled = true;
+    let lastCopiedText = "";
 
     inputEl.addEventListener('paste', () => {
         pasted = true;
         // Delay sedikit untuk memastikan paste sudah selesai
         setTimeout(() => {
-            if (autoProcessEnabled) {
-                processAndAutoCopy();
-            }
-        }, 100);
+            processAndAutoCopy();
+        }, 50);
     });
 
     const processAndAutoCopy = async () => {
@@ -575,6 +592,7 @@
       // Jika input kosong, sembunyikan output
       if (!raw) {
         outputEl.style.display = "none";
+        copyStatusEl.style.display = "none";
         updateStats(0, 0, 0, "-");
         return;
       }
@@ -602,66 +620,55 @@
       updateStats(originalCount, uniqueCount, result.length, delimiter);
 
       try {
-        // SALIN OTOMATIS ke clipboard - LOGIKA UTAMA ANDA
+        // SALIN OTOMATIS ke clipboard - LOGIKA UTAMA
         await navigator.clipboard.writeText(result);
+        lastCopiedText = result;
         
+        // Tampilkan status copy berhasil
+        copyStatusEl.style.display = "flex";
+        copyStatusEl.style.color = "#10b981";
+        copyStatusEl.innerHTML = '<i class="fas fa-check-circle"></i> Tersalin ke clipboard!';
+        
+        // Toast notification
         if (pasted) {
-            // Tampilkan notifikasi untuk paste
-            Swal.fire({
-                icon: 'success',
-                title: '<span style="font-size: 1.2em;">Berhasil!</span>',
-                html: `<div style="text-align: left;">
-                      <p><b>${originalCount} baris</b> data telah diproses.</p>
-                      ${originalCount !== uniqueCount ? 
-                        `<p><span class="badge badge-success">${originalCount - uniqueCount} duplikat dihapus</span></p>` : 
-                        ''}
-                      <p>Hasil telah <b>otomatis tersalin</b> ke clipboard.</p>
-                      <p><small>Pembatas: <code>${delimiter === ' ' ? '[Spasi]' : delimiter || '[Tidak Ada]'}</code></small></p>
-                      <p><i>Sekarang Anda bisa langsung paste (Ctrl+V) ke Excel atau aplikasi lain!</i></p>
-                      </div>`,
-                timer: 3500,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                showClass: {
-                    popup: 'animate__animated animate__fadeInDown'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutUp'
-                }
-            }).then(() => {
-                // Membersihkan textarea setelah notifikasi hilang
-                inputEl.value = '';
-                pasted = false;
-            });
-        } else {
-            // Untuk input manual (bukan paste)
-            Swal.fire({
-                toast: true, 
-                position: 'top-end', 
-                icon: 'success',
-                title: 'Diperbarui & Disalin!', 
-                text: 'Hasil otomatis tersalin ke clipboard',
-                showConfirmButton: false,
-                timer: 2000, 
-                timerProgressBar: true
-            });
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Berhasil!',
+            html: `<div style="text-align: left;">
+                  <p><b>${originalCount} baris</b> data diproses.</p>
+                  ${originalCount !== uniqueCount ? 
+                    `<p><span style="color: #10b981; font-weight: 600;">${originalCount - uniqueCount} duplikat dihapus</span></p>` : 
+                    ''}
+                  <p><small>Sekarang bisa langsung paste (Ctrl+V)</small></p>
+                  </div>`,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+          });
+          pasted = false;
         }
         
-        // Fokus kembali ke input untuk kemudahan penggunaan
+        // Auto-hide copy status setelah 5 detik
         setTimeout(() => {
-            inputEl.focus();
-        }, 100);
+          copyStatusEl.style.display = "none";
+        }, 5000);
         
       } catch (err) {
         console.error("Gagal menyalin otomatis:", err);
-        // Fallback: tampilkan pesan untuk salin manual
+        copyStatusEl.style.display = "flex";
+        copyStatusEl.style.color = "#f59e0b";
+        copyStatusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal salin otomatis';
+        
         Swal.fire({
+          toast: true,
+          position: 'top-end',
           icon: 'warning',
-          title: 'Hasil Siap',
-          html: `<p>Hasil telah diproses tetapi tidak bisa disalin otomatis.</p>
-                <p>Silakan gunakan tombol <b>"Salin Hasil"</b> di bawah.</p>`,
-          timer: 3000,
-          showConfirmButton: false
+          title: 'Gagal salin otomatis',
+          text: 'Gunakan tombol "Salin Ulang"',
+          showConfirmButton: false,
+          timer: 2000
         });
       }
     };
@@ -687,21 +694,37 @@
       // Tambahkan badge jika ada duplikat yang dihapus
       if (originalCount > uniqueCount && removeDuplicatesEl.checked) {
         uniqueCountEl.innerHTML = `${uniqueCount} <span class="badge badge-success">-${originalCount - uniqueCount}</span>`;
+      } else {
+        uniqueCountEl.innerHTML = uniqueCount;
       }
     }
 
     async function copyManually() {
-      const output = outputContentEl.textContent;
+      const output = outputContentEl.textContent || lastCopiedText;
       if (!output) return;
       try {
         await navigator.clipboard.writeText(output);
+        lastCopiedText = output;
+        
+        copyStatusEl.style.display = "flex";
+        copyStatusEl.style.color = "#10b981";
+        copyStatusEl.innerHTML = '<i class="fas fa-check-circle"></i> Tersalin!';
+        
         Swal.fire({
+          toast: true,
+          position: 'top-end',
           icon: 'success',
           title: 'Tersalin!',
-          text: 'Hasil telah disalin ke clipboard.',
-          timer: 1200,
-          showConfirmButton: false
+          text: 'Hasil telah disalin ke clipboard',
+          showConfirmButton: false,
+          timer: 1500
         });
+        
+        // Auto-hide copy status setelah 5 detik
+        setTimeout(() => {
+          copyStatusEl.style.display = "none";
+        }, 5000);
+        
       } catch (err) {
         Swal.fire({ 
           icon: 'error', 
@@ -711,6 +734,24 @@
       }
     }
 
+    function clearInputOnly() {
+      inputEl.value = "";
+      inputEl.focus();
+      outputEl.style.display = "none";
+      copyStatusEl.style.display = "none";
+      updateStats(0, 0, 0, "-");
+      
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'info',
+        title: 'Input dihapus',
+        text: 'Data input telah dibersihkan',
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+
     function resetAll() {
       inputEl.value = "";
       outputContentEl.textContent = "";
@@ -718,57 +759,56 @@
       customDelimiterEl.value = "";
       delimiterEl.value = ";";
       removeDuplicatesEl.checked = true;
+      copyStatusEl.style.display = "none";
+      lastCopiedText = "";
       updateStats(0, 0, 0, "-");
       inputEl.focus();
       
       Swal.fire({
+        toast: true,
+        position: 'top-end',
         icon: 'info',
-        title: 'Direset',
-        text: 'Semua data telah dihapus. Siap untuk input baru.',
-        timer: 1500,
-        showConfirmButton: false
+        title: 'Reset berhasil',
+        text: 'Semua data telah direset',
+        showConfirmButton: false,
+        timer: 1500
       });
     }
 
     // Event listeners untuk auto-process saat ada perubahan
     inputEl.addEventListener('input', () => {
-        if (autoProcessEnabled && inputEl.value.trim()) {
+        if (inputEl.value.trim()) {
             processAndAutoCopy();
         } else if (!inputEl.value.trim()) {
             outputEl.style.display = "none";
+            copyStatusEl.style.display = "none";
             updateStats(0, 0, 0, "-");
         }
     });
     
     delimiterEl.addEventListener('change', () => {
-        if (autoProcessEnabled && inputEl.value.trim()) {
+        if (inputEl.value.trim()) {
             processAndAutoCopy();
         }
     });
     
     customDelimiterEl.addEventListener('input', () => {
-        if (autoProcessEnabled && inputEl.value.trim()) {
+        if (inputEl.value.trim()) {
             processAndAutoCopy();
         }
     });
     
     removeDuplicatesEl.addEventListener('change', () => {
-        if (autoProcessEnabled && inputEl.value.trim()) {
+        if (inputEl.value.trim()) {
             processAndAutoCopy();
         }
     });
     
-    // Toggle untuk auto-process
+    // Tambahkan keyboard shortcut untuk clear input
     document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key === 'm') {
-            autoProcessEnabled = !autoProcessEnabled;
-            Swal.fire({
-                icon: autoProcessEnabled ? 'success' : 'info',
-                title: autoProcessEnabled ? 'Auto-Process Diaktifkan' : 'Auto-Process Dinonaktifkan',
-                text: `Tekan Ctrl+M lagi untuk ${autoProcessEnabled ? 'menonaktifkan' : 'mengaktifkan'}`,
-                timer: 1500,
-                showConfirmButton: false
-            });
+        if (e.ctrlKey && e.key === 'Delete') {
+            clearInputOnly();
+            e.preventDefault();
         }
     });
     
@@ -778,15 +818,15 @@
     // Info shortcut keyboard
     setTimeout(() => {
         Swal.fire({
+            toast: true,
+            position: 'top-end',
             icon: 'info',
-            title: 'Tips Penggunaan',
-            html: `<p><b>Ctrl+M</b> untuk toggle auto-process</p>
-                  <p><b>Ctrl+V</b> untuk paste data</p>
-                  <p>Hasil akan otomatis tersalin ke clipboard</p>`,
-            timer: 3000,
-            showConfirmButton: false
+            title: 'Tips',
+            html: '<small>Ctrl+Delete: Hapus input<br>Hasil otomatis tersalin!</small>',
+            showConfirmButton: false,
+            timer: 3000
         });
-    }, 2000);
+    }, 1000);
   </script>
 </body>
 </html>
