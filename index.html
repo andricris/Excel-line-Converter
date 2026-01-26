@@ -331,6 +331,41 @@
       color: var(--dark);
       margin-bottom: 15px;
     }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      flex: 1;
+      min-width: 180px;
+      padding: 12px 18px;
+      border-radius: var(--border-radius);
+      border: 2px solid var(--gray-light);
+      background: white;
+      color: var(--dark);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .tab-button.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
     
     .instructions ol {
       padding-left: 20px;
@@ -462,7 +497,16 @@
       </div>
       
       <div class="card-body">
-        <div class="form-group">
+        <div class="tabs" role="tablist">
+          <button class="tab-button active" type="button" data-tab="normal">
+            <i class="fas fa-file-lines"></i> Konversi Data
+          </button>
+          <button class="tab-button" type="button" data-tab="dirty">
+            <i class="fas fa-broom"></i> Data Belum Bersih
+          </button>
+        </div>
+
+        <div class="form-group tab-panel active" data-tab-panel="normal">
           <label class="form-label" for="input"><i class="fas fa-paste"></i> Tempel Data Excel di Sini</label>
           <textarea 
             id="input" 
@@ -471,6 +515,18 @@
           ></textarea>
           <div style="font-size: 12px; color: var(--gray); margin-top: 5px;">
             <i class="fas fa-info-circle"></i> Data akan otomatis hilang setelah diproses
+          </div>
+        </div>
+
+        <div class="form-group tab-panel" data-tab-panel="dirty">
+          <label class="form-label" for="dirtyInput"><i class="fas fa-filter"></i> Tempel Data yang Belum Bersih</label>
+          <textarea 
+            id="dirtyInput" 
+            class="form-control" 
+            placeholder="Tempel (Ctrl+V) data yang ada (Released) dan tanda ; di sini...&#10;&#10;Contoh:&#10;;IR00974264 (Released)"
+          ></textarea>
+          <div style="font-size: 12px; color: var(--gray); margin-top: 5px;">
+            <i class="fas fa-info-circle"></i> Akan menghapus teks (Released), tanda ;, spasi, dan kolom kosong terlebih dahulu
           </div>
         </div>
         
@@ -563,6 +619,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     const inputEl = document.getElementById("input");
+    const dirtyInputEl = document.getElementById("dirtyInput");
     const delimiterEl = document.getElementById("delimiter");
     const customDelimiterEl = document.getElementById("customDelimiter");
     const outputEl = document.getElementById("output");
@@ -573,20 +630,50 @@
     const uniqueCountEl = document.getElementById("uniqueCount");
     const resultLengthEl = document.getElementById("resultLength");
     const delimiterUsedEl = document.getElementById("delimiterUsed");
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabPanels = document.querySelectorAll(".tab-panel");
     
     let lastProcessedData = "";
     let isProcessing = false;
+    let activeTab = "normal";
 
     // Tangkap event paste
     inputEl.addEventListener('paste', async (e) => {
       // Tunggu sebentar agar paste selesai
       setTimeout(() => {
-        processAndAutoCopy();
+        processAndAutoCopy(inputEl, false);
       }, 50);
     });
 
-    const processAndAutoCopy = async () => {
-      const raw = inputEl.value.trim();
+    dirtyInputEl.addEventListener('paste', async (e) => {
+      setTimeout(() => {
+        processAndAutoCopy(dirtyInputEl, true);
+      }, 50);
+    });
+
+    const extractLines = (raw, isDirty) => {
+      if (!isDirty) {
+        return raw.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
+      }
+
+      return raw
+        .split(/\r?\n/)
+        .flatMap(line => line.split(/\t+/))
+        .map(line => line
+          .replace(/\(Released\)/gi, "")
+          .replace(/;/g, "")
+          .replace(/\s+/g, "")
+          .trim())
+        .filter(line => line !== "");
+    };
+
+    const getActiveDelimiter = () => {
+      const custom = customDelimiterEl.value;
+      return custom !== "" ? custom : delimiterEl.value;
+    };
+
+    const processAndAutoCopy = async (sourceEl, isDirty) => {
+      const raw = sourceEl.value.trim();
 
       // Jika input kosong, jangan lakukan apa-apa
       if (!raw || isProcessing) {
@@ -595,9 +682,8 @@
 
       isProcessing = true;
       
-      const custom = customDelimiterEl.value;
-      const delimiter = custom !== "" ? custom : delimiterEl.value;
-      let lines = raw.split(/\r?\n/).filter(l => l.trim() !== "");
+      const delimiter = getActiveDelimiter();
+      let lines = extractLines(raw, isDirty);
       const originalCount = lines.length;
       
       // Hapus duplikat jika checkbox dicentang
@@ -623,7 +709,7 @@
         await navigator.clipboard.writeText(result);
         
         // KOSONGKAN TEXTAREA (sesuai permintaan Anda)
-        inputEl.value = "";
+        sourceEl.value = "";
         
         // Tampilkan notifikasi sukses
         Swal.fire({
@@ -669,10 +755,24 @@
       isProcessing = false;
     };
 
-    // Fungsi untuk proses manual
-    function processData() {
+    const processActiveData = () => {
+      if (activeTab === "dirty") {
+        if (dirtyInputEl.value.trim()) {
+          processAndAutoCopy(dirtyInputEl, true);
+        } else {
+          Swal.fire({
+            icon: 'info',
+            title: 'Data kosong',
+            text: 'Silakan masukkan data terlebih dahulu',
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+        return;
+      }
+
       if (inputEl.value.trim()) {
-        processAndAutoCopy();
+        processAndAutoCopy(inputEl, false);
       } else {
         Swal.fire({
           icon: 'info',
@@ -682,6 +782,11 @@
           showConfirmButton: false
         });
       }
+    };
+
+    // Fungsi untuk proses manual
+    function processData() {
+      processActiveData();
     }
 
     function updateStats(originalCount, uniqueCount, charCount, delimiter) {
@@ -762,6 +867,7 @@
 
     function resetAll() {
       inputEl.value = "";
+      dirtyInputEl.value = "";
       outputContentEl.textContent = "";
       outputEl.style.display = "none";
       customDelimiterEl.value = "";
@@ -784,21 +890,42 @@
 
     // Auto-process saat delimiter berubah (hanya jika ada data di textarea)
     delimiterEl.addEventListener('change', () => {
-      if (inputEl.value.trim()) {
-        processAndAutoCopy();
+      const activeInput = activeTab === "dirty" ? dirtyInputEl : inputEl;
+      if (activeInput.value.trim()) {
+        processAndAutoCopy(activeInput, activeTab === "dirty");
       }
     });
     
     customDelimiterEl.addEventListener('input', () => {
-      if (inputEl.value.trim()) {
-        processAndAutoCopy();
+      const activeInput = activeTab === "dirty" ? dirtyInputEl : inputEl;
+      if (activeInput.value.trim()) {
+        processAndAutoCopy(activeInput, activeTab === "dirty");
       }
     });
     
     removeDuplicatesEl.addEventListener('change', () => {
-      if (inputEl.value.trim()) {
-        processAndAutoCopy();
+      const activeInput = activeTab === "dirty" ? dirtyInputEl : inputEl;
+      if (activeInput.value.trim()) {
+        processAndAutoCopy(activeInput, activeTab === "dirty");
       }
+    });
+
+    tabButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        const target = button.dataset.tab;
+        activeTab = target;
+
+        tabButtons.forEach(btn => btn.classList.toggle("active", btn === button));
+        tabPanels.forEach(panel => {
+          panel.classList.toggle("active", panel.dataset.tabPanel === target);
+        });
+
+        if (activeTab === "dirty") {
+          dirtyInputEl.focus();
+        } else {
+          inputEl.focus();
+        }
+      });
     });
 
     // Auto-process saat mengetik (opsional, bisa diaktifkan)
