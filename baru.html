@@ -17,11 +17,7 @@
       --radius: 3px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: var(--bg);
@@ -29,7 +25,7 @@
       font-family: 'Courier New', Courier, monospace;
       min-height: 100vh;
       margin: 0;
-      overflow-x: hidden;
+      overflow: hidden;
       position: relative;
     }
 
@@ -41,43 +37,85 @@
       pointer-events: none;
     }
 
+    /* Preload / Splash Screen */
+    #preload {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      color: #0f0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      padding: 20px;
+      transition: opacity 0.8s ease;
+    }
+
+    #preload.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .preload-content {
+      max-width: 800px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .typing {
+      white-space: pre;
+      overflow: hidden;
+      border-right: 0.15em solid #0f5;
+      animation: blink-caret 0.7s step-end infinite;
+    }
+
+    @keyframes blink-caret {
+      from, to { border-color: transparent; }
+      50% { border-color: #0f5; }
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #020;
+      border: 1px solid #040;
+      margin: 20px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #0f5;
+      transition: width 3.5s linear;
+    }
+
+    .log-line { opacity: 0; transition: opacity 0.4s; }
+
     .container {
       position: relative;
       z-index: 1;
       max-width: 1100px;
       margin: 0 auto;
       padding: 20px 15px;
+      opacity: 0;
+      transition: opacity 1s ease;
     }
 
-    .header {
-      text-align: center;
-      margin: 20px 0 30px;
+    .container.visible {
+      opacity: 1;
     }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-
-    .logo-icon {
-      color: var(--accent);
-      font-size: 38px;
-    }
-
-    h1 {
-      font-size: 2.1rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-    }
-
-    .subtitle {
-      color: var(--text-dim);
-      font-size: 1rem;
-      opacity: 0.8;
-    }
+    /* sisanya style utama tetap sama seperti sebelumnya */
+    .header { text-align: center; margin: 20px 0 30px; }
+    .logo { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 8px; }
+    .logo-icon { color: var(--accent); font-size: 38px; }
+    h1 { font-size: 2.1rem; letter-spacing: 3px; text-transform: uppercase; }
+    .subtitle { color: var(--text-dim); font-size: 1rem; opacity: 0.8; }
 
     .main-card {
       background: var(--card-bg);
@@ -97,17 +135,24 @@
       text-transform: uppercase;
     }
 
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-label {
-      color: var(--accent);
+    .tabs { display: flex; border-bottom: 1px solid #040; margin-bottom: 18px; }
+    .tab-button {
+      padding: 10px 18px;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
       font-weight: bold;
-      margin-bottom: 6px;
-      display: block;
+      transition: all 0.15s;
     }
+    .tab-button:hover { color: #0c5; }
+    .tab-button.active { color: #0f5; border-bottom: 3px solid #0c5; }
 
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-label { color: var(--accent); font-weight: bold; margin-bottom: 6px; display: block; }
     .form-control {
       width: 100%;
       padding: 10px 14px;
@@ -118,17 +163,12 @@
       font-size: 1.05rem;
       border-radius: var(--radius);
     }
-
     .form-control:focus {
       outline: none;
       border-color: #0c5;
       box-shadow: 0 0 8px rgba(0, 200, 80, 0.3);
     }
-
-    textarea.form-control {
-      min-height: 160px;
-      resize: vertical;
-    }
+    textarea.form-control { min-height: 160px; resize: vertical; }
 
     .options-group {
       display: grid;
@@ -136,10 +176,7 @@
       gap: 16px;
       margin-bottom: 20px;
     }
-
-    @media (max-width: 640px) {
-      .options-group { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 640px) { .options-group { grid-template-columns: 1fr; } }
 
     .checkbox-group {
       display: flex;
@@ -148,12 +185,7 @@
       color: var(--text-dim);
       margin: 12px 0;
     }
-
-    .checkbox-group input {
-      accent-color: #0c5;
-      width: 18px;
-      height: 18px;
-    }
+    .checkbox-group input { accent-color: #0c5; width: 18px; height: 18px; }
 
     .output-container {
       background: rgba(0, 20, 0, 0.8);
@@ -163,10 +195,7 @@
       margin: 24px 0;
       display: none;
     }
-
-    .output-container.visible {
-      display: block;
-    }
+    .output-container.visible { display: block; }
 
     .output-content {
       background: #000600;
@@ -200,45 +229,13 @@
       flex: 1;
       min-width: 140px;
     }
-
-    .btn:hover {
-      background: rgba(0, 100, 40, 0.7);
-      border-color: #0c5;
-    }
-
-    .btn:active {
-      transform: translateY(1px);
-    }
+    .btn:hover { background: rgba(0, 100, 40, 0.7); border-color: #0c5; }
+    .btn:active { transform: translateY(1px); }
 
     .btn-primary    { background: rgba(0, 80, 30, 0.7); border-color: #060; }
     .btn-success    { background: rgba(0, 100, 40, 0.7); border-color: #080; }
     .btn-warning    { background: rgba(60, 80, 0, 0.6); border-color: #660; color: #ff4; }
     .btn-secondary  { background: rgba(0, 30, 15, 0.6); border-color: #040; }
-
-    .tabs {
-      display: flex;
-      border-bottom: 1px solid #040;
-      margin-bottom: 18px;
-    }
-
-    .tab-button {
-      padding: 10px 18px;
-      background: transparent;
-      border: none;
-      color: var(--text-dim);
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.15s;
-    }
-
-    .tab-button:hover {
-      color: #0c5;
-    }
-
-    .tab-button.active {
-      color: #0f5;
-      border-bottom: 3px solid #0c5;
-    }
 
     .stats {
       display: grid;
@@ -255,17 +252,8 @@
       border-radius: var(--radius);
     }
 
-    .stat-value {
-      font-size: 1.9rem;
-      font-weight: bold;
-      color: #0f5;
-    }
-
-    .stat-label {
-      color: var(--text-dim);
-      font-size: 0.85rem;
-      margin-top: 4px;
-    }
+    .stat-value { font-size: 1.9rem; font-weight: bold; color: #0f5; }
+    .stat-label { color: var(--text-dim); font-size: 0.85rem; margin-top: 4px; }
 
     .footer {
       text-align: center;
@@ -276,21 +264,39 @@
       border-top: 1px solid #020;
     }
 
-    .author-link {
-      color: #060;
-      text-decoration: none;
-    }
-
-    .author-link:hover {
-      color: #0c5;
-    }
+    .author-link { color: #060; text-decoration: none; }
+    .author-link:hover { color: #0c5; }
   </style>
 </head>
 <body>
 
+  <!-- Preload Screen -->
+  <div id="preload">
+    <div class="preload-content">
+      <div style="margin-bottom: 30px; text-align: center; font-size: 1.4rem; letter-spacing: 2px;">
+        H3STORE ENTERPRISE TERMINAL
+      </div>
+
+      <div class="typing" id="typing-text"></div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+
+      <div style="margin-top: 20px; font-size: 0.95rem; opacity: 0.7;">
+        [SECURE BOOT SEQUENCE]<br>
+        Checking root access................. [OK]<br>
+        Loading matrix renderer............. [OK]<br>
+        Initializing data exploit module.... [OK]<br>
+        Bypassing corporate firewall........ [OK]<br>
+        Establishing encrypted session...... [OK]
+      </div>
+    </div>
+  </div>
+
   <canvas id="matrix-bg"></canvas>
 
-  <div class="container">
+  <div class="container" id="main-content">
     <div class="header">
       <div class="logo">
         <i class="fas fa-terminal logo-icon"></i>
@@ -299,6 +305,7 @@
       <p class="subtitle">DATA EXTRACTION & CONCATENATION UTILITY — ROOT ACCESS</p>
     </div>
 
+    <!-- sisanya konten utama sama seperti sebelumnya -->
     <div class="main-card">
       <div class="card-header">[ TERMINAL v1.0 — SECURE SESSION ]</div>
 
@@ -309,18 +316,12 @@
 
       <div class="form-group tab-panel active" data-tab-panel="normal">
         <label class="form-label" for="input">>> PASTE EXCEL COLUMN:</label>
-        <textarea id="input" class="form-control" placeholder="Ctrl+V → auto process
-Contoh:
-IO00895128
-IO00885689
-IO00875123"></textarea>
+        <textarea id="input" class="form-control" placeholder="Ctrl+V → auto process\nContoh:\nIO00895128\nIO00885689\nIO00875123"></textarea>
       </div>
 
       <div class="form-group tab-panel" data-tab-panel="dirty">
         <label class="form-label" for="dirtyInput">>> PASTE CONTAMINATED DATA:</label>
-        <textarea id="dirtyInput" class="form-control" placeholder="Contoh:
-;IR00974264 (Released)
-IR00981234 (Released)"></textarea>
+        <textarea id="dirtyInput" class="form-control" placeholder="Contoh:\n;IR00974264 (Released)\nIR00981234 (Released)"></textarea>
       </div>
 
       <div class="options-group">
@@ -356,22 +357,10 @@ IR00981234 (Released)"></textarea>
       </div>
 
       <div class="stats" id="stats">
-        <div class="stat-box">
-          <div class="stat-value" id="lineCount">0</div>
-          <div class="stat-label">LINES PROCESSED</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value" id="uniqueCount">0</div>
-          <div class="stat-label">UNIQUE ENTRIES</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value" id="resultLength">0</div>
-          <div class="stat-label">CHARS OUTPUT</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value" id="delimiterUsed">-</div>
-          <div class="stat-label">DELIMITER</div>
-        </div>
+        <div class="stat-box"><div class="stat-value" id="lineCount">0</div><div class="stat-label">LINES PROCESSED</div></div>
+        <div class="stat-box"><div class="stat-value" id="uniqueCount">0</div><div class="stat-label">UNIQUE ENTRIES</div></div>
+        <div class="stat-box"><div class="stat-value" id="resultLength">0</div><div class="stat-label">CHARS OUTPUT</div></div>
+        <div class="stat-box"><div class="stat-value" id="delimiterUsed">-</div><div class="stat-label">DELIMITER</div></div>
       </div>
 
       <div class="buttons-group">
@@ -389,50 +378,106 @@ IR00981234 (Released)"></textarea>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     // ────────────────────────────────
-    // MATRIX RAIN BACKGROUND
+    // PRELOAD ANIMATION
     // ────────────────────────────────
-    const canvas = document.getElementById('matrix-bg');
-    const ctx = canvas.getContext('2d');
+    const preload = document.getElementById('preload');
+    const mainContent = document.getElementById('main-content');
+    const typingText = document.getElementById('typing-text');
+    const progressFill = document.getElementById('progress-fill');
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+    const bootMessages = [
+      "INITIALIZING SYSTEM...",
+      "H3STORE ENTERPRISE TERMINAL v1.0",
+      "SECURE BOOT SEQUENCE STARTED",
+      "BYPASSING FIREWALL LAYERS...",
+      "DECRYPTING SESSION KEYS...",
+      "ESTABLISHING ROOT ACCESS...",
+      "LOADING MATRIX RENDERER...",
+      "SYSTEM READY. ENTER COMMAND."
+    ];
 
-    const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?/\\~`';
-    const fontSize = 14;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
+    let msgIndex = 0;
+    let charIndex = 0;
+    let currentText = "";
 
-    function draw() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = '#0f3';
-      ctx.font = fontSize + 'px monospace';
-
-      for (let i = 0; i < drops.length; i++) {
-        const text = chars.charAt(Math.floor(Math.random() * chars.length));
-        const x = i * fontSize;
-        const y = drops[i] * fontSize;
-
-        ctx.fillText(text, x, y);
-
-        if (y > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
+    function typeNext() {
+      if (msgIndex < bootMessages.length) {
+        if (charIndex < bootMessages[msgIndex].length) {
+          currentText += bootMessages[msgIndex].charAt(charIndex);
+          typingText.textContent = currentText;
+          charIndex++;
+          setTimeout(typeNext, 40 + Math.random() * 30); // typing speed variasi
+        } else {
+          typingText.textContent = currentText + "\n";
+          currentText = "";
+          charIndex = 0;
+          msgIndex++;
+          setTimeout(typeNext, 600); // jeda antar baris
         }
-        drops[i]++;
+      } else {
+        // selesai typing → mulai progress bar
+        progressFill.style.width = '100%';
+        setTimeout(completePreload, 800);
       }
     }
 
-    setInterval(draw, 35);
+    function completePreload() {
+      preload.classList.add('hidden');
+      mainContent.classList.add('visible');
+      // matrix rain mulai setelah preload selesai
+      startMatrixRain();
+    }
+
+    // mulai preload setelah halaman load
+    window.addEventListener('load', () => {
+      setTimeout(typeNext, 800); // mulai setelah 0.8 detik
+    });
+
+    // ────────────────────────────────
+    // MATRIX RAIN (dimulai setelah preload)
+    // ────────────────────────────────
+    let canvas, ctx, drops = [], fontSize = 14;
+
+    function startMatrixRain() {
+      canvas = document.getElementById('matrix-bg');
+      ctx = canvas.getContext('2d');
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const columns = Math.floor(canvas.width / fontSize);
+        drops = Array(columns).fill(1);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?/\\~`';
+
+      function draw() {
+        ctx.fillStyle = 'rgba(0,0,0,0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#0f3';
+        ctx.font = fontSize + 'px monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = chars.charAt(Math.floor(Math.random() * chars.length));
+          const x = i * fontSize;
+          const y = drops[i] * fontSize;
+
+          ctx.fillText(text, x, y);
+
+          if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
+          drops[i]++;
+        }
+      }
+
+      setInterval(draw, 35);
+    }
 
     // ────────────────────────────────
     // LOGIKA APLIKASI (sama seperti sebelumnya)
     // ────────────────────────────────
-
     const inputEl = document.getElementById("input");
     const dirtyInputEl = document.getElementById("dirtyInput");
     const delimiterEl = document.getElementById("delimiter");
@@ -455,9 +500,7 @@ IR00981234 (Released)"></textarea>
     dirtyInputEl.addEventListener('paste', () => setTimeout(() => processAndAutoCopy(dirtyInputEl, true), 60));
 
     function extractLines(raw, isDirty) {
-      if (!isDirty) {
-        return raw.split(/\r?\n/).map(l => l.trim()).filter(l => l);
-      }
+      if (!isDirty) return raw.split(/\r?\n/).map(l => l.trim()).filter(l => l);
       return raw.split(/\r?\n/)
         .flatMap(l => l.split(/\t+/))
         .map(l => l.replace(/\(Released\)/gi,"").replace(/;/g,"").replace(/\s+/g,"").trim())
@@ -558,7 +601,7 @@ IR00981234 (Released)"></textarea>
       };
     });
 
-    // Inisialisasi
+    // Inisialisasi stats
     lineCountEl.textContent = uniqueCountEl.textContent = resultLengthEl.textContent = "0";
     delimiterUsedEl.textContent = "-";
   </script>
