@@ -25,7 +25,7 @@
       font-family: 'Courier New', Courier, monospace;
       min-height: 100vh;
       margin: 0;
-      overflow: hidden;
+      overflow-x: hidden;
       position: relative;
     }
 
@@ -37,7 +37,7 @@
       pointer-events: none;
     }
 
-    /* Preload / Splash Screen */
+    /* Preload Screen */
     #preload {
       position: fixed;
       inset: 0;
@@ -91,10 +91,8 @@
       height: 100%;
       width: 0%;
       background: #0f5;
-      transition: width 3.5s linear;
+      transition: width 2.8s linear;
     }
-
-    .log-line { opacity: 0; transition: opacity 0.4s; }
 
     .container {
       position: relative;
@@ -103,14 +101,13 @@
       margin: 0 auto;
       padding: 20px 15px;
       opacity: 0;
-      transition: opacity 1s ease;
+      transition: opacity 0.8s ease;
     }
 
     .container.visible {
       opacity: 1;
     }
 
-    /* sisanya style utama tetap sama seperti sebelumnya */
     .header { text-align: center; margin: 20px 0 30px; }
     .logo { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 8px; }
     .logo-icon { color: var(--accent); font-size: 38px; }
@@ -305,7 +302,6 @@
       <p class="subtitle">DATA EXTRACTION & CONCATENATION UTILITY — ROOT ACCESS</p>
     </div>
 
-    <!-- sisanya konten utama sama seperti sebelumnya -->
     <div class="main-card">
       <div class="card-header">[ TERMINAL v1.0 — SECURE SESSION ]</div>
 
@@ -378,7 +374,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     // ────────────────────────────────
-    // PRELOAD ANIMATION
+    // PRELOAD ANIMATION (~3 detik)
     // ────────────────────────────────
     const preload = document.getElementById('preload');
     const mainContent = document.getElementById('main-content');
@@ -406,35 +402,32 @@
           currentText += bootMessages[msgIndex].charAt(charIndex);
           typingText.textContent = currentText;
           charIndex++;
-          setTimeout(typeNext, 40 + Math.random() * 30); // typing speed variasi
+          setTimeout(typeNext, 20 + Math.random() * 20);
         } else {
           typingText.textContent = currentText + "\n";
           currentText = "";
           charIndex = 0;
           msgIndex++;
-          setTimeout(typeNext, 600); // jeda antar baris
+          setTimeout(typeNext, 300);
         }
       } else {
-        // selesai typing → mulai progress bar
         progressFill.style.width = '100%';
-        setTimeout(completePreload, 800);
+        setTimeout(completePreload, 200);
       }
     }
 
     function completePreload() {
       preload.classList.add('hidden');
       mainContent.classList.add('visible');
-      // matrix rain mulai setelah preload selesai
       startMatrixRain();
     }
 
-    // mulai preload setelah halaman load
     window.addEventListener('load', () => {
-      setTimeout(typeNext, 800); // mulai setelah 0.8 detik
+      setTimeout(typeNext, 400);
     });
 
     // ────────────────────────────────
-    // MATRIX RAIN (dimulai setelah preload)
+    // MATRIX RAIN
     // ────────────────────────────────
     let canvas, ctx, drops = [], fontSize = 14;
 
@@ -476,7 +469,7 @@
     }
 
     // ────────────────────────────────
-    // LOGIKA APLIKASI (sama seperti sebelumnya)
+    // LOGIKA APLIKASI
     // ────────────────────────────────
     const inputEl = document.getElementById("input");
     const dirtyInputEl = document.getElementById("dirtyInput");
@@ -601,7 +594,6 @@
       };
     });
 
-    // Inisialisasi stats
     lineCountEl.textContent = uniqueCountEl.textContent = resultLengthEl.textContent = "0";
     delimiterUsedEl.textContent = "-";
   </script>
