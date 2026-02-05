@@ -266,10 +266,10 @@
 </head>
 <body>
 
-  <!-- Preload Screen – hanya 3 kalimat -->
+  <!-- Preload Screen – 3 kalimat saja -->
   <div id="preload">
     <div class="preload-content">
-      <div style="margin-bottom: 40px; text-align: center; font-size: 1.5rem; letter-spacing: 2px;">
+      <div style="margin-bottom: 40px; text-align: center; font-size: 1.6rem; letter-spacing: 2px;">
         H3STORE TERMINAL
       </div>
 
@@ -364,7 +364,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     // ────────────────────────────────
-    // PRELOAD – HANYA 3 KALIMAT + CEPAT
+    // PRELOAD – PROGRESS BAR PASTI SELESAI DULU
     // ────────────────────────────────
     const preload = document.getElementById('preload');
     const mainContent = document.getElementById('main-content');
@@ -387,24 +387,31 @@
           currentText += bootMessages[msgIndex].charAt(charIndex);
           typingText.textContent = currentText;
           charIndex++;
-          setTimeout(typeNext, 25 + Math.random() * 20); // 25–45ms per huruf
+          setTimeout(typeNext, 25 + Math.random() * 20);
         } else {
           typingText.textContent = currentText + "\n";
           currentText = "";
           charIndex = 0;
           msgIndex++;
-          setTimeout(typeNext, 300); // jeda antar kalimat 300ms
+          setTimeout(typeNext, 300);
         }
       } else {
+        // Mulai progress bar
         progressFill.style.width = '100%';
-        setTimeout(completePreload, 150);
+
+        // Tunggu sampai progress bar selesai mengisi (sesuai durasi CSS 1.8s + sedikit buffer)
+        setTimeout(completePreload, 1950);
       }
     }
 
     function completePreload() {
       preload.classList.add('hidden');
-      mainContent.classList.add('visible');
-      startMatrixRain();
+
+      // Tunggu fade-out selesai baru tampilkan konten utama
+      setTimeout(() => {
+        mainContent.classList.add('visible');
+        startMatrixRain();
+      }, 600);
     }
 
     window.addEventListener('load', () => {
@@ -454,7 +461,7 @@
     }
 
     // ────────────────────────────────
-    // LOGIKA APLIKASI (sama seperti sebelumnya)
+    // LOGIKA APLIKASI
     // ────────────────────────────────
     const inputEl = document.getElementById("input");
     const dirtyInputEl = document.getElementById("dirtyInput");
