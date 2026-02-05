@@ -51,7 +51,7 @@
       font-size: 1.1rem;
       line-height: 1.6;
       padding: 20px;
-      transition: opacity 0.8s ease;
+      transition: opacity 0.6s ease;
     }
 
     #preload.hidden {
@@ -91,7 +91,7 @@
       height: 100%;
       width: 0%;
       background: #0f5;
-      transition: width 2.8s linear;
+      transition: width 2.4s linear;
     }
 
     .container {
@@ -101,7 +101,7 @@
       margin: 0 auto;
       padding: 20px 15px;
       opacity: 0;
-      transition: opacity 0.8s ease;
+      transition: opacity 0.6s ease;
     }
 
     .container.visible {
@@ -374,7 +374,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     // ────────────────────────────────
-    // PRELOAD ANIMATION (~3 detik)
+    // PRELOAD ANIMATION – DI-FIX MENJADI ~3 DETIK
     // ────────────────────────────────
     const preload = document.getElementById('preload');
     const mainContent = document.getElementById('main-content');
@@ -402,17 +402,17 @@
           currentText += bootMessages[msgIndex].charAt(charIndex);
           typingText.textContent = currentText;
           charIndex++;
-          setTimeout(typeNext, 20 + Math.random() * 20);
+          setTimeout(typeNext, 15 + Math.random() * 15); // 15–30ms per karakter
         } else {
           typingText.textContent = currentText + "\n";
           currentText = "";
           charIndex = 0;
           msgIndex++;
-          setTimeout(typeNext, 300);
+          setTimeout(typeNext, 200); // jeda antar baris 200ms
         }
       } else {
         progressFill.style.width = '100%';
-        setTimeout(completePreload, 200);
+        setTimeout(completePreload, 150); // delay akhir sangat singkat
       }
     }
 
@@ -423,7 +423,7 @@
     }
 
     window.addEventListener('load', () => {
-      setTimeout(typeNext, 400);
+      setTimeout(typeNext, 300); // mulai setelah 300ms
     });
 
     // ────────────────────────────────
@@ -469,7 +469,7 @@
     }
 
     // ────────────────────────────────
-    // LOGIKA APLIKASI
+    // LOGIKA APLIKASI (tidak berubah)
     // ────────────────────────────────
     const inputEl = document.getElementById("input");
     const dirtyInputEl = document.getElementById("dirtyInput");
