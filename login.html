@@ -2,76 +2,297 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>EXCEL LINE CONVERT v1.0</title>
+  <title>EXCEL_LINE_CONVERT v1.0 - TERMINAL ACCESS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --bg:#000; --text:#0f0; --accent:#0f5; --border:#040;
+      --bg: #000;
+      --text: #0f0;
+      --text-dim: #0c0;
+      --accent: #0f5;
+      --border: #040;
+      --card-bg: rgba(4, 12, 4, 0.88);
+      --radius: 3px;
     }
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{background:var(--bg);color:var(--text);font-family:'Courier New',monospace;min-height:100vh;margin:0;overflow-x:hidden}
-    #matrix-bg{position:fixed;inset:0;z-index:-2;pointer-events:none}
-    #terminal-login{position:fixed;inset:0;background:#000;z-index:9999;display:flex;justify-content:center;align-items:center;transition:opacity .5s}
-    #terminal-login.hidden{opacity:0;pointer-events:none}
-    .terminal{width:90%;max-width:800px;height:70vh;background:#000;border:2px solid #0a0;border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
-    .terminal-header{background:#020;padding:6px 12px;color:#0f0;font-weight:bold;border-bottom:1px solid #040;display:flex;justify-content:space-between}
-    .terminal-body{flex:1;padding:16px;overflow-y:auto;font-size:1.05rem;line-height:1.5}
-    .prompt{color:#0f5}
-    .cursor{display:inline-block;width:8px;height:1.2em;background:#0f0;vertical-align:middle;animation:blink .7s step-end infinite}
-    @keyframes blink{50%{opacity:0}}
-    .success{color:#0f8;font-weight:bold}
-    .container{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:16px;opacity:0;transition:opacity .6s}
-    .container.visible{opacity:1}
-    h1{font-size:2rem;letter-spacing:2px;text-transform:uppercase;text-align:center;margin:20px 0}
-    .subtitle{color:#0c0;text-align:center;margin-bottom:24px}
-    .main-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:24px}
-    .card-header{background:rgba(0,40,0,.7);padding:8px 12px;margin:-16px -16px 16px -16px;border-bottom:1px solid #050;font-weight:bold}
-    .tabs{display:flex;border-bottom:1px solid #040;margin-bottom:16px}
-    .tab-button{padding:8px 16px;background:transparent;border:none;color:#0c0;cursor:pointer;font-weight:bold;transition:.15s}
-    .tab-button:hover{color:#0f5}
-    .tab-button.active{color:#0f5;border-bottom:3px solid #0f5}
-    .tab-panel{display:none}
-    .tab-panel.active{display:block}
-    .form-group{margin-bottom:16px}
-    .form-label{color:#0f5;font-weight:bold;margin-bottom:6px;display:block}
-    .form-control{width:100%;padding:10px;background:#000800;border:1px solid #040;color:#0f0;font-family:monospace;border-radius:var(--radius)}
-    .form-control:focus{outline:none;border-color:#0f5;box-shadow:0 0 6px #0f5}
-    textarea.form-control{min-height:140px;resize:vertical}
-    .options-group{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-    @media (max-width:600px){.options-group{grid-template-columns:1fr}}
-    .checkbox-group{display:flex;align-items:center;gap:8px;color:#0c0;margin:10px 0}
-    .checkbox-group input{accent-color:#0f5;width:16px;height:16px}
-    .output-container{background:rgba(0,20,0,.8);border:1px solid #040;border-radius:var(--radius);padding:12px;margin:20px 0;display:none}
-    .output-container.visible{display:block}
-    .output-content{background:#000600;border:1px solid #030;padding:12px;font-size:1rem;line-height:1.5;max-height:180px;overflow-y:auto;color:#0f3}
-    .buttons-group{display:flex;gap:10px;margin:16px 0;flex-wrap:wrap}
-    .btn{padding:10px 20px;background:rgba(0,60,20,.6);border:1px solid #050;color:#0f0;font-weight:bold;cursor:pointer;border-radius:var(--radius);flex:1;min-width:120px;transition:.15s}
-    .btn:hover{background:rgba(0,100,40,.7);border-color:#0f5}
-    .btn:active{transform:translateY(1px)}
-    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:20px 0}
-    .stat-box{background:rgba(0,30,10,.7);border:1px solid #040;padding:10px;text-align:center;border-radius:var(--radius)}
-    .stat-value{font-size:1.7rem;font-weight:bold;color:#0f5}
-    .stat-label{color:#0c0;font-size:.85rem;margin-top:4px}
-    .footer{text-align:center;color:#040;font-size:.9rem;margin-top:30px;padding-top:20px;border-top:1px solid #020}
-    .author-link{color:#060;text-decoration:none}
-    .author-link:hover{color:#0f5}
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    #matrix-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    /* Terminal Login sebagai Preload (CMD style) */
+    #terminal-login {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.7s ease;
+    }
+
+    #terminal-login.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .terminal {
+      width: 90%;
+      max-width: 900px;
+      height: 80vh;
+      background: #000;
+      border: 2px solid #0a0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .terminal-header {
+      background: #020;
+      padding: 8px 15px;
+      color: #0f0;
+      font-weight: bold;
+      border-bottom: 1px solid #040;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+    }
+
+    .terminal-body {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .prompt {
+      color: #0f5;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 1.2em;
+      background: #0f0;
+      vertical-align: middle;
+      animation: blink 0.7s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .success { color: #0f8; font-weight: bold; }
+    .error { color: #f44; }
+
+    /* Konten utama */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 15px;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+    }
+
+    .container.visible {
+      opacity: 1;
+    }
+
+    .header { text-align: center; margin: 20px 0 30px; }
+    .logo { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 8px; }
+    .logo-icon { color: var(--accent); font-size: 38px; }
+    h1 { font-size: 2.1rem; letter-spacing: 3px; text-transform: uppercase; }
+    .subtitle { color: var(--text-dim); font-size: 1rem; opacity: 0.8; }
+
+    .main-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card-header {
+      background: rgba(0, 40, 0, 0.7);
+      padding: 10px 16px;
+      margin: -20px -20px 20px -20px;
+      border-bottom: 1px solid #050;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .tabs { display: flex; border-bottom: 1px solid #040; margin-bottom: 18px; }
+    .tab-button {
+      padding: 10px 18px;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.15s;
+    }
+    .tab-button:hover { color: #0c5; }
+    .tab-button.active { color: #0f5; border-bottom: 3px solid #0c5; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-label { color: var(--accent); font-weight: bold; margin-bottom: 6px; display: block; }
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      background: #000800;
+      border: 1px solid #040;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      font-size: 1.05rem;
+      border-radius: var(--radius);
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #0c5;
+      box-shadow: 0 0 8px rgba(0, 200, 80, 0.3);
+    }
+    textarea.form-control { min-height: 160px; resize: vertical; }
+
+    .options-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 640px) { .options-group { grid-template-columns: 1fr; } }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-dim);
+      margin: 12px 0;
+    }
+    .checkbox-group input { accent-color: #0c5; width: 18px; height: 18px; }
+
+    .output-container {
+      background: rgba(0, 20, 0, 0.8);
+      border: 1px solid #040;
+      border-radius: var(--radius);
+      padding: 16px;
+      margin: 24px 0;
+      display: none;
+    }
+    .output-container.visible { display: block; }
+
+    .output-content {
+      background: #000600;
+      border: 1px solid #030;
+      padding: 14px;
+      font-size: 1.05rem;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 200px;
+      overflow-y: auto;
+      color: #0f3;
+    }
+
+    .buttons-group {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 22px;
+      background: rgba(0, 60, 20, 0.6);
+      border: 1px solid #050;
+      color: #0f0;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: var(--radius);
+      transition: all 0.15s;
+      flex: 1;
+      min-width: 140px;
+    }
+    .btn:hover { background: rgba(0, 100, 40, 0.7); border-color: #0c5; }
+    .btn:active { transform: translateY(1px); }
+
+    .btn-primary    { background: rgba(0, 80, 30, 0.7); border-color: #060; }
+    .btn-success    { background: rgba(0, 100, 40, 0.7); border-color: #080; }
+    .btn-warning    { background: rgba(60, 80, 0, 0.6); border-color: #660; color: #ff4; }
+    .btn-secondary  { background: rgba(0, 30, 15, 0.6); border-color: #040; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin: 24px 0;
+    }
+
+    .stat-box {
+      background: rgba(0, 30, 10, 0.7);
+      border: 1px solid #040;
+      padding: 12px;
+      text-align: center;
+      border-radius: var(--radius);
+    }
+
+    .stat-value { font-size: 1.9rem; font-weight: bold; color: #0f5; }
+    .stat-label { color: var(--text-dim); font-size: 0.85rem; margin-top: 4px; }
+
+    .footer {
+      text-align: center;
+      color: #040;
+      font-size: 0.9rem;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #020;
+    }
+
+    .author-link { color: #060; text-decoration: none; }
+    .author-link:hover { color: #0c5; }
   </style>
 </head>
 <body>
 
-  <!-- Terminal Login (Preload) -->
+  <!-- Terminal Login sebagai Preload (CMD style) -->
   <div id="terminal-login">
     <div class="terminal">
       <div class="terminal-header">
-        <div>H3STORE TERMINAL v1.0</div>
+        <div>H3STORE SECURE TERMINAL v1.0</div>
         <div>HOST: localhost</div>
       </div>
       <div class="terminal-body" id="terminalOutput"></div>
     </div>
   </div>
 
-  <!-- Audio ketik -->
+  <!-- Audio efek ketik -->
   <audio id="typeSound" preload="auto">
     <source src="https://assets.codepen.io/243235/keyboard-single-key-press-1.mp3" type="audio/mpeg">
   </audio>
@@ -82,175 +303,345 @@
     <div class="header">
       <div class="logo">
         <i class="fas fa-terminal logo-icon"></i>
-        <h1>EXCEL LINE CONVERT</h1>
+        <h1>EXCEL_LINE_CONVERT</h1>
       </div>
-      <p class="subtitle">Utility Konversi Data Excel ke Baris Tunggal</p>
+      <p class="subtitle">DATA EXTRACTION & CONCATENATION UTILITY — ROOT ACCESS</p>
     </div>
 
     <div class="main-card">
-      <div class="card-header">[ SESSION AKTIF ]</div>
+      <div class="card-header">[ TERMINAL v1.0 — SECURE SESSION ]</div>
 
       <div class="tabs">
-        <button class="tab-button active" data-tab="normal">NORMAL</button>
-        <button class="tab-button" data-tab="dirty">KOTOR</button>
+        <button class="tab-button active" data-tab="normal">NORMAL_DATA</button>
+        <button class="tab-button" data-tab="dirty">DIRTY_CLEANSE</button>
       </div>
 
       <div class="form-group tab-panel active" data-tab-panel="normal">
-        <label class="form-label" for="input">>> TEMPATKAN DATA KOLOM:</label>
-        <textarea id="input" class="form-control" placeholder="Ctrl+V data Excel (satu kolom)"></textarea>
+        <label class="form-label" for="input">>> PASTE EXCEL COLUMN:</label>
+        <textarea id="input" class="form-control" placeholder="Ctrl+V → auto process\nContoh:\nIO00895128\nIO00885689\nIO00875123"></textarea>
       </div>
 
       <div class="form-group tab-panel" data-tab-panel="dirty">
-        <label class="form-label" for="dirtyInput">>> TEMPATKAN DATA KOTOR:</label>
-        <textarea id="dirtyInput" class="form-control" placeholder="Contoh: ;IR00974264 (Released)"></textarea>
+        <label class="form-label" for="dirtyInput">>> PASTE CONTAMINATED DATA:</label>
+        <textarea id="dirtyInput" class="form-control" placeholder="Contoh:\n;IR00974264 (Released)\nIR00981234 (Released)"></textarea>
       </div>
 
       <div class="options-group">
         <div>
-          <label class="form-label" for="delimiter">PEMISAH</label>
+          <label class="form-label" for="delimiter">DELIMITER:</label>
           <select id="delimiter" class="form-control">
             <option value=";">;</option>
             <option value=",">,</option>
             <option value="|">|</option>
-            <option value=" ">SPASI</option>
-            <option value="\n">ENTER</option>
-            <option value="">KOSONG</option>
+            <option value=" ">SPACE</option>
+            <option value="\n">NEWLINE</option>
+            <option value="">NULL</option>
           </select>
         </div>
         <div>
-          <label class="form-label" for="customDelimiter">KUSTOM</label>
-          <input type="text" id="customDelimiter" class="form-control" placeholder="misal: → | ::">
+          <label class="form-label" for="customDelimiter">CUSTOM DELIMITER:</label>
+          <input type="text" id="customDelimiter" class="form-control" placeholder="→ | :: -">
         </div>
       </div>
 
       <div class="checkbox-group">
         <input type="checkbox" id="removeDuplicates" checked>
-        <label for="removeDuplicates">Hapus duplikat</label>
+        <label for="removeDuplicates">PURGE DUPLICATES</label>
       </div>
 
       <div id="output" class="output-container">
-        <div style="margin-bottom:8px;color:#0c5;font-weight:bold">[HASIL – SUDAH DIKOPI]</div>
+        <div style="margin-bottom:10px; color:#0c5; font-weight:bold;">[ OUTPUT BUFFER — AUTO-COPIED ]</div>
         <div id="outputContent" class="output-content"></div>
         <div class="buttons-group">
-          <button class="btn btn-success" onclick="copyManually()"><i class="far fa-copy"></i> KOPI ULANG</button>
-          <button class="btn btn-secondary" onclick="clearOutputOnly()"><i class="fas fa-eye-slash"></i> SEMBUYIKAN</button>
+          <button class="btn btn-success" onclick="copyManually()"><i class="far fa-copy"></i> DUMP AGAIN</button>
+          <button class="btn btn-secondary" onclick="clearOutputOnly()"><i class="fas fa-eye-slash"></i> CLEAR</button>
         </div>
       </div>
 
       <div class="stats" id="stats">
-        <div class="stat-box"><div class="stat-value" id="lineCount">0</div><div class="stat-label">BARIS</div></div>
-        <div class="stat-box"><div class="stat-value" id="uniqueCount">0</div><div class="stat-label">UNIK</div></div>
-        <div class="stat-box"><div class="stat-value" id="resultLength">0</div><div class="stat-label">KARAKTER</div></div>
-        <div class="stat-box"><div class="stat-value" id="delimiterUsed">-</div><div class="stat-label">PEMISAH</div></div>
+        <div class="stat-box"><div class="stat-value" id="lineCount">0</div><div class="stat-label">LINES PROCESSED</div></div>
+        <div class="stat-box"><div class="stat-value" id="uniqueCount">0</div><div class="stat-label">UNIQUE ENTRIES</div></div>
+        <div class="stat-box"><div class="stat-value" id="resultLength">0</div><div class="stat-label">CHARS OUTPUT</div></div>
+        <div class="stat-box"><div class="stat-value" id="delimiterUsed">-</div><div class="stat-label">DELIMITER</div></div>
       </div>
 
       <div class="buttons-group">
-        <button class="btn btn-primary" onclick="processData()"><i class="fas fa-bolt"></i> PROSES</button>
-        <button class="btn btn-secondary" onclick="resetAll()"><i class="fas fa-redo"></i> RESET</button>
+        <button class="btn btn-primary" onclick="processData()"><i class="fas fa-bolt"></i> EXECUTE</button>
+        <button class="btn btn-secondary" onclick="resetAll()"><i class="fas fa-redo"></i> REBOOT</button>
       </div>
     </div>
 
     <div class="footer">
-      © 2026 H3STORE • <a href="https://andri-land.biz.id/" class="author-link" target="_blank">andri-land.biz.id</a>
+      TERMINAL SESSION ACTIVE • H3STORE ENTERPRISE • 2026<br>
+      <a href="https://andri-land.biz.id/" class="author-link" target="_blank">>> ACCESS ORIGIN</a>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
+    // Audio efek ketik
     const typeSound = document.getElementById('typeSound');
-    function playTypeSound(){typeSound.currentTime=0;typeSound.volume=.25;typeSound.play().catch(()=>{})}
 
-    const out = document.getElementById('terminalOutput');
-    const login = document.getElementById('terminal-login');
-    const main = document.getElementById('main-content');
-
-    function add(t='',c=''){const l=document.createElement('div');l.textContent=t;c&&(l.className=c);out.appendChild(l);out.scrollTop=out.scrollHeight}
-    function type(t,cb,s=18){let i=0;const iv=setInterval(()=>{if(i<t.length){out.innerHTML+=t[i];playTypeSound();i++;out.scrollTop=out.scrollHeight}else{clearInterval(iv);out.innerHTML+='<br>';cb&&cb()}},s)}
-
-    function startLogin(){
-      add("H3STORE TERMINAL v1.0");
-      add("All rights reserved.");
-      add("");
-      add("C:\\>");
-
-      setTimeout(()=>{
-        type("login as: ",()=>{
-          setTimeout(()=>{
-            out.innerHTML+="convert<br>";playTypeSound();
-            type("password: ",()=>{
-              setTimeout(()=>{
-                out.innerHTML+="********<br>";playTypeSound();
-                add("");
-                add("Verifying...","prompt");
-                setTimeout(()=>{
-                  add("Access granted.","success");
-                  add("Starting session...","success");
-                  setTimeout(()=>{
-                    login.classList.add('hidden');
-                    setTimeout(()=>{main.classList.add('visible');startMatrix()},500);
-                  },800);
-                },600);
-              },500);
-            },18);
-          },600);
-        },18);
-      },600);
+    function playTypeSound() {
+      typeSound.currentTime = 0;
+      typeSound.volume = 0.25;
+      typeSound.play().catch(() => {});
     }
 
-    window.addEventListener('load',()=>setTimeout(startLogin,400));
+    const terminalOutput = document.getElementById('terminalOutput');
+    const terminalLogin = document.getElementById('terminal-login');
+    const mainContent = document.getElementById('main-content');
 
-    let c,ctx,d=[],fs=14;
-    function startMatrix(){
-      c=document.getElementById('matrix-bg');ctx=c.getContext('2d');
-      function r(){c.width=innerWidth;c.height=innerHeight;d=Array(Math.floor(c.width/fs)).fill(1)}
-      r();addEventListener('resize',r);
-      const ch='01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?/\\~`';
-      function draw(){
-        ctx.fillStyle='rgba(0,0,0,.05)';ctx.fillRect(0,0,c.width,c.height);
-        ctx.fillStyle='#0f3';ctx.font=fs+'px monospace';
-        for(let i=0;i<d.length;i++){
-          const t=ch[Math.floor(Math.random()*ch.length)];
-          ctx.fillText(t,i*fs,d[i]*fs);
-          if(d[i]*fs>c.height&&Math.random()>.975)d[i]=0;d[i]++;
+    function addLine(text = '', className = '') {
+      const line = document.createElement('div');
+      line.textContent = text;
+      if (className) line.className = className;
+      terminalOutput.appendChild(line);
+      terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    }
+
+    function typeText(text, callback, speed = 20) {
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < text.length) {
+          terminalOutput.innerHTML += text.charAt(i);
+          playTypeSound();
+          i++;
+          terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        } else {
+          clearInterval(interval);
+          terminalOutput.innerHTML += '<br>';
+          if (callback) callback();
+        }
+      }, speed);
+    }
+
+    // Sequence terminal login (dipercepat)
+    function startLoginSequence() {
+      addLine("Microsoft Windows [Version 10.0.19045.4529]");
+      addLine("(c) Microsoft Corporation. All rights reserved.");
+      addLine("");
+      addLine("C:\\Users\\Administrator>");
+
+      setTimeout(() => {
+        typeText("net user convert /add", () => {
+          setTimeout(() => {
+            addLine("The command completed successfully.");
+            addLine("");
+            typeText("net localgroup administrators convert /add", () => {
+              setTimeout(() => {
+                addLine("The command completed successfully.");
+                addLine("");
+                addLine("C:\\Users\\Administrator>");
+
+                setTimeout(() => {
+                  typeText("login as: ", () => {
+                    setTimeout(() => {
+                      terminalOutput.innerHTML += "convert<br>";
+                      playTypeSound();
+                      typeText("password: ", () => {
+                        setTimeout(() => {
+                          terminalOutput.innerHTML += "********<br>";
+                          playTypeSound();
+                          addLine("");
+                          addLine("Verifying credentials...", "prompt");
+
+                          setTimeout(() => {
+                            addLine("Access granted.", "success");
+                            addLine("Initializing secure session...", "success");
+
+                            setTimeout(() => {
+                              terminalLogin.classList.add('hidden');
+                              setTimeout(() => {
+                                mainContent.classList.add('visible');
+                                startMatrixRain();
+                              }, 500);
+                            }, 1000);
+                          }, 800);
+                        }, 600);
+                      }, 25);
+                    }, 700);
+                  }, 25);
+                }, 600);
+              }, 700);
+            }, 25);
+          }, 600);
+        }, 25);
+      }, 800);
+    }
+
+    window.addEventListener('load', () => {
+      setTimeout(startLoginSequence, 500);
+    });
+
+    // Matrix Rain
+    let canvas, ctx, drops = [], fontSize = 14;
+
+    function startMatrixRain() {
+      canvas = document.getElementById('matrix-bg');
+      ctx = canvas.getContext('2d');
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const columns = Math.floor(canvas.width / fontSize);
+        drops = Array(columns).fill(1);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?/\\~`';
+
+      function draw() {
+        ctx.fillStyle = 'rgba(0,0,0,0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#0f3';
+        ctx.font = fontSize + 'px monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = chars.charAt(Math.floor(Math.random() * chars.length));
+          const x = i * fontSize;
+          const y = drops[i] * fontSize;
+
+          ctx.fillText(text, x, y);
+
+          if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
+          drops[i]++;
         }
       }
-      setInterval(draw,35);
+
+      setInterval(draw, 35);
     }
 
-    const i=document.getElementById("input"),di=document.getElementById("dirtyInput"),de=document.getElementById("delimiter"),cde=document.getElementById("customDelimiter");
-    const o=document.getElementById("output"),oc=document.getElementById("outputContent"),rd=document.getElementById("removeDuplicates");
-    const lc=document.getElementById("lineCount"),uc=document.getElementById("uniqueCount"),rl=document.getElementById("resultLength"),du=document.getElementById("delimiterUsed");
-    const tbs=document.querySelectorAll(".tab-button"),tps=document.querySelectorAll(".tab-panel");
+    // ────────────────────────────────
+    // LOGIKA APLIKASI EXCEL TO LINE CONVERT
+    // ────────────────────────────────
+    const inputEl = document.getElementById("input");
+    const dirtyInputEl = document.getElementById("dirtyInput");
+    const delimiterEl = document.getElementById("delimiter");
+    const customDelimiterEl = document.getElementById("customDelimiter");
+    const outputEl = document.getElementById("output");
+    const outputContentEl = document.getElementById("outputContent");
+    const removeDuplicatesEl = document.getElementById("removeDuplicates");
+    const lineCountEl = document.getElementById("lineCount");
+    const uniqueCountEl = document.getElementById("uniqueCount");
+    const resultLengthEl = document.getElementById("resultLength");
+    const delimiterUsedEl = document.getElementById("delimiterUsed");
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabPanels = document.querySelectorAll(".tab-panel");
 
-    let last="",proc=false,at="normal";
+    let lastProcessedData = "";
+    let isProcessing = false;
+    let activeTab = "normal";
 
-    i.addEventListener('paste',()=>setTimeout(()=>run(i,false),60));
-    di.addEventListener('paste',()=>setTimeout(()=>run(di,true),60));
+    inputEl.addEventListener('paste', () => setTimeout(() => processAndAutoCopy(inputEl, false), 60));
+    dirtyInputEl.addEventListener('paste', () => setTimeout(() => processAndAutoCopy(dirtyInputEl, true), 60));
 
-    function clean(r,d){return d?r.split(/\r?\n/).flatMap(l=>l.split(/\t+/)).map(l=>l.replace(/\(Released\)/gi,"").replace(/;/g,"").replace(/\s+/g,"").trim()).filter(l=>l):r.split(/\r?\n/).map(l=>l.trim()).filter(l=>l)}
-    function delim(){return cde.value||de.value}
-
-    async function run(el,d){
-      const r=el.value.trim();if(!r||proc)return;proc=true;
-      const dl=delim();let ln=clean(r,d);const og=ln.length;
-      if(rd.checked)ln=[...new Set(ln)];
-      const un=ln.length;const res=ln.join(dl);last=res;
-      oc.textContent=res;o.classList.add("visible");
-      lc.textContent=og;uc.textContent=un;rl.textContent=res.length;du.textContent=dl||'NULL';
-      try{await navigator.clipboard.writeText(res);el.value="";Swal.fire({background:'#000a00',color:'#0f0',icon:'success',title:'COPIED',text:`${og} → ${un} lines`,timer:1800,showConfirmButton:false})}catch{}
-      proc=false;
+    function extractLines(raw, isDirty) {
+      if (!isDirty) return raw.split(/\r?\n/).map(l => l.trim()).filter(l => l);
+      return raw.split(/\r?\n/)
+        .flatMap(l => l.split(/\t+/))
+        .map(l => l.replace(/\(Released\)/gi,"").replace(/;/g,"").replace(/\s+/g,"").trim())
+        .filter(l => l);
     }
 
-    function processData(){const el=at==="dirty"?di:i;if(el.value.trim())run(el,at==="dirty")}
-    async function copyManually(){const t=oc.textContent||last;if(!t)return;try{await navigator.clipboard.writeText(t);Swal.fire({background:'#000a00',color:'#0f0',toast:true,position:'top-end',icon:'success',title:'COPIED',timer:1000})}catch{}}
-    function clearOutputOnly(){o.classList.remove("visible");oc.textContent="";lc.textContent=uc.textContent=rl.textContent="0";du.textContent="-"}
-    function resetAll(){i.value=di.value=cde.value="";de.value=";";rd.checked=true;clearOutputOnly()}
+    function getActiveDelimiter() {
+      return customDelimiterEl.value || delimiterEl.value;
+    }
 
-    de.onchange=cde.oninput=rd.onchange=()=>{const el=at==="dirty"?di:i;if(el.value.trim())run(el,at==="dirty")}
+    async function processAndAutoCopy(sourceEl, isDirty) {
+      const raw = sourceEl.value.trim();
+      if (!raw || isProcessing) return;
+      isProcessing = true;
 
-    tbs.forEach(b=>b.onclick=()=>{at=b.dataset.tab;tbs.forEach(btn=>btn.classList.toggle("active",btn===b));tps.forEach(p=>p.classList.toggle("active",p.dataset.tabPanel===at));(at==="dirty"?di:i).focus()})
+      const delimiter = getActiveDelimiter();
+      let lines = extractLines(raw, isDirty);
+      const original = lines.length;
 
-    lc.textContent=uc.textContent=rl.textContent="0";du.textContent="-";
+      if (removeDuplicatesEl.checked) lines = [...new Set(lines)];
+
+      const unique = lines.length;
+      const result = lines.join(delimiter);
+      lastProcessedData = result;
+
+      outputContentEl.textContent = result;
+      outputEl.classList.add("visible");
+
+      lineCountEl.textContent = original;
+      uniqueCountEl.textContent = unique;
+      resultLengthEl.textContent = result.length;
+      delimiterUsedEl.textContent = delimiter || 'NULL';
+
+      try {
+        await navigator.clipboard.writeText(result);
+        sourceEl.value = "";
+        Swal.fire({
+          background: '#000a00',
+          color: '#0f0',
+          icon: 'success',
+          title: 'BUFFER COPIED',
+          text: `Processed ${original} lines${original !== unique ? ` | Purged ${original-unique} duplicates` : ''}`,
+          timer: 2200,
+          showConfirmButton: false
+        });
+      } catch (e) {
+        Swal.fire({
+          background: '#000a00',
+          color: '#f44',
+          icon: 'warning',
+          title: 'CLIPBOARD ERROR',
+          text: 'Use DUMP AGAIN',
+          timer: 1800
+        });
+      }
+      isProcessing = false;
+    }
+
+    function processData() {
+      const el = activeTab === "dirty" ? dirtyInputEl : inputEl;
+      if (el.value.trim()) processAndAutoCopy(el, activeTab === "dirty");
+    }
+
+    async function copyManually() {
+      const txt = outputContentEl.textContent || lastProcessedData;
+      if (!txt) return;
+      try {
+        await navigator.clipboard.writeText(txt);
+        Swal.fire({background:'#000a00', color:'#0f0', toast:true, position:'top-end', icon:'success', title:'DUMPED', timer:1000});
+      } catch {}
+    }
+
+    function clearOutputOnly() {
+      outputEl.classList.remove("visible");
+      outputContentEl.textContent = "";
+      lineCountEl.textContent = uniqueCountEl.textContent = resultLengthEl.textContent = "0";
+      delimiterUsedEl.textContent = "-";
+    }
+
+    function resetAll() {
+      inputEl.value = dirtyInputEl.value = customDelimiterEl.value = "";
+      delimiterEl.value = ";";
+      removeDuplicatesEl.checked = true;
+      clearOutputOnly();
+    }
+
+    delimiterEl.onchange = customDelimiterEl.oninput = removeDuplicatesEl.onchange = () => {
+      const el = activeTab === "dirty" ? dirtyInputEl : inputEl;
+      if (el.value.trim()) processAndAutoCopy(el, activeTab === "dirty");
+    };
+
+    tabButtons.forEach(b => {
+      b.onclick = () => {
+        activeTab = b.dataset.tab;
+        tabButtons.forEach(btn => btn.classList.toggle("active", btn === b));
+        tabPanels.forEach(p => p.classList.toggle("active", p.dataset.tabPanel === activeTab));
+        (activeTab === "dirty" ? dirtyInputEl : inputEl).focus();
+      };
+    });
+
+    lineCountEl.textContent = uniqueCountEl.textContent = resultLengthEl.textContent = "0";
+    delimiterUsedEl.textContent = "-";
   </script>
 </body>
 </html>
