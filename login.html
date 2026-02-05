@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>EXCEL_LINE_EXPLOIT v1.0 - SECURE ACCESS</title>
+  <title>EXCEL_LINE_EXPLOIT v1.0 - TERMINAL ACCESS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -25,7 +25,7 @@
       font-family: 'Courier New', Courier, monospace;
       min-height: 100vh;
       margin: 0;
-      overflow: hidden;
+      overflow-x: hidden;
       position: relative;
     }
 
@@ -37,120 +37,75 @@
       pointer-events: none;
     }
 
-    /* QR Login Screen */
-    #qr-login {
+    /* Terminal Login sebagai Preload (CMD style) */
+    #terminal-login {
       position: fixed;
       inset: 0;
       background: #000;
       z-index: 9999;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      transition: opacity 0.8s ease;
+      transition: opacity 0.7s ease;
     }
 
-    #qr-login.hidden {
+    #terminal-login.hidden {
       opacity: 0;
       pointer-events: none;
     }
 
-    .qr-container {
-      text-align: center;
-      max-width: 380px;
-      padding: 30px 20px;
+    .terminal {
+      width: 90%;
+      max-width: 900px;
+      height: 80vh;
+      background: #000;
       border: 2px solid #0a0;
-      border-radius: 16px;
-      background: rgba(0, 20, 0, 0.75);
-      box-shadow: 0 0 40px rgba(0, 255, 0, 0.2);
-      position: relative;
-    }
-
-    .qr-title {
-      font-size: 1.5rem;
-      margin-bottom: 25px;
-      text-shadow: 0 0 10px #0f0;
-    }
-
-    /* Phone Frame + Camera Animation */
-    .phone-frame {
-      position: relative;
-      width: 260px;
-      height: 520px;
-      background: linear-gradient(135deg, #111 0%, #222 50%, #111 100%);
-      border: 12px solid #000;
-      border-radius: 40px;
-      margin: 0 auto 30px;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 255, 0, 0.1);
+      border-radius: 8px;
       overflow: hidden;
-    }
-
-    .phone-screen {
-      width: 100%;
-      height: 100%;
-      background: #000;
+      box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
       display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
+      flex-direction: column;
     }
 
-    .camera-lens {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 60px;
-      background: #000;
-      border-radius: 50%;
-      border: 4px solid #222;
-      box-shadow: inset 0 0 10px #000, 0 0 15px rgba(0, 255, 0, 0.6);
-      z-index: 2;
-    }
-
-    .camera-lens::after {
-      content: '';
-      position: absolute;
-      inset: 8px;
-      background: radial-gradient(circle at 30% 30%, #0f5, #000);
-      border-radius: 50%;
-      animation: lens-pulse 2s infinite alternate;
-    }
-
-    @keyframes lens-pulse {
-      0% { opacity: 0.6; transform: scale(0.9); }
-      100% { opacity: 1; transform: scale(1.05); }
-    }
-
-    .scan-line {
-      position: absolute;
-      width: 100%;
-      height: 3px;
-      background: linear-gradient(transparent, #0f5, transparent);
-      box-shadow: 0 0 15px #0f5;
-      animation: scan 3s infinite linear;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    @keyframes scan {
-      0% { top: -5%; }
-      50% { top: 105%; }
-      100% { top: -5%; }
-    }
-
-    .status {
-      margin-top: 20px;
-      font-size: 1.3rem;
-      min-height: 1.5em;
-    }
-
-    .success {
-      color: #0f8;
+    .terminal-header {
+      background: #020;
+      padding: 8px 15px;
+      color: #0f0;
       font-weight: bold;
-      text-shadow: 0 0 15px #0f8;
+      border-bottom: 1px solid #040;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
     }
+
+    .terminal-body {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .prompt {
+      color: #0f5;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 1.2em;
+      background: #0f0;
+      vertical-align: middle;
+      animation: blink 0.7s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .success { color: #0f8; font-weight: bold; }
+    .error { color: #f44; }
 
     /* Konten utama */
     .container {
@@ -160,14 +115,13 @@
       margin: 0 auto;
       padding: 20px 15px;
       opacity: 0;
-      transition: opacity 0.8s ease;
+      transition: opacity 0.7s ease;
     }
 
     .container.visible {
       opacity: 1;
     }
 
-    /* sisanya style utama tetap sama seperti sebelumnya */
     .header { text-align: center; margin: 20px 0 30px; }
     .logo { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 8px; }
     .logo-icon { color: var(--accent); font-size: 38px; }
@@ -327,25 +281,21 @@
 </head>
 <body>
 
-  <!-- QR Login Screen (Preload) -->
-  <div id="qr-login">
-    <div class="qr-container">
-      <div class="qr-title">SCAN QR CODE TO AUTHENTICATE</div>
-
-      <div class="phone-frame">
-        <div class="phone-screen">
-          <!-- QR Code -->
-          <img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=H3STORE_SECURE_ACCESS_2026" alt="QR Code" style="width:180px; height:180px; border-radius:8px;">
-          <!-- Scan line -->
-          <div class="scan-line"></div>
-        </div>
-        <!-- Kamera lensa -->
-        <div class="camera-lens"></div>
+  <!-- Terminal Login sebagai Preload (CMD style) -->
+  <div id="terminal-login">
+    <div class="terminal">
+      <div class="terminal-header">
+        <div>H3STORE SECURE TERMINAL v1.0</div>
+        <div>HOST: localhost</div>
       </div>
-
-      <div class="status" id="qr-status">Positioning camera...</div>
+      <div class="terminal-body" id="terminalOutput"></div>
     </div>
   </div>
+
+  <!-- Audio efek ketik -->
+  <audio id="typeSound" preload="auto">
+    <source src="https://assets.codepen.io/243235/keyboard-single-key-press-1.mp3" type="audio/mpeg">
+  </audio>
 
   <canvas id="matrix-bg"></canvas>
 
@@ -429,49 +379,99 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const qrLogin = document.getElementById('qr-login');
-    const qrStatus = document.getElementById('qr-status');
+    // Audio efek ketik
+    const typeSound = document.getElementById('typeSound');
+
+    function playTypeSound() {
+      typeSound.currentTime = 0;
+      typeSound.volume = 0.25;
+      typeSound.play().catch(() => {});
+    }
+
+    const terminalOutput = document.getElementById('terminalOutput');
+    const terminalLogin = document.getElementById('terminal-login');
     const mainContent = document.getElementById('main-content');
 
-    // Sequence simulasi scan QR dengan animasi kamera
-    function startQRSequence() {
-      qrStatus.textContent = "Positioning camera...";
+    function addLine(text = '', className = '') {
+      const line = document.createElement('div');
+      line.textContent = text;
+      if (className) line.className = className;
+      terminalOutput.appendChild(line);
+      terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    }
+
+    function typeText(text, callback, speed = 20) {
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < text.length) {
+          terminalOutput.innerHTML += text.charAt(i);
+          playTypeSound(); // suara ketik setiap karakter
+          i++;
+          terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        } else {
+          clearInterval(interval);
+          terminalOutput.innerHTML += '<br>';
+          if (callback) callback();
+        }
+      }, speed);
+    }
+
+    // Sequence terminal login (dipercepat)
+    function startLoginSequence() {
+      addLine("Microsoft Windows [Version 10.0.19045.4529]");
+      addLine("(c) Microsoft Corporation. All rights reserved.");
+      addLine("");
+      addLine("C:\\Users\\Administrator>");
 
       setTimeout(() => {
-        qrStatus.textContent = "Detecting QR code...";
-
-        setTimeout(() => {
-          qrStatus.textContent = "Aligning frame...";
-
+        typeText("net user root /add", () => {
           setTimeout(() => {
-            qrStatus.textContent = "Scanning...";
-            // Animasi scan line sudah berjalan via CSS
-
-            setTimeout(() => {
-              qrStatus.textContent = "QR Code Verified";
-              qrStatus.classList.add('success');
-
+            addLine("The command completed successfully.");
+            addLine("");
+            typeText("net localgroup administrators root /add", () => {
               setTimeout(() => {
-                qrStatus.textContent = "Access Granted";
-                qrStatus.style.fontSize = "1.6rem";
-                qrStatus.style.textShadow = "0 0 20px #0f8";
+                addLine("The command completed successfully.");
+                addLine("");
+                addLine("C:\\Users\\Administrator>");
 
                 setTimeout(() => {
-                  qrLogin.classList.add('hidden');
-                  setTimeout(() => {
-                    mainContent.classList.add('visible');
-                    startMatrixRain();
-                  }, 600);
-                }, 1400);
-              }, 1300);
-            }, 1800);
-          }, 1500);
-        }, 1600);
-      }, 1400);
+                  typeText("login as: ", () => {
+                    setTimeout(() => {
+                      terminalOutput.innerHTML += "root<br>";
+                      playTypeSound();
+                      typeText("password: ", () => {
+                        setTimeout(() => {
+                          terminalOutput.innerHTML += "********<br>";
+                          playTypeSound();
+                          addLine("");
+                          addLine("Verifying credentials...", "prompt");
+
+                          setTimeout(() => {
+                            addLine("Access granted.", "success");
+                            addLine("Initializing secure session...", "success");
+
+                            setTimeout(() => {
+                              terminalLogin.classList.add('hidden');
+                              setTimeout(() => {
+                                mainContent.classList.add('visible');
+                                startMatrixRain();
+                              }, 500);
+                            }, 1000);
+                          }, 800);
+                        }, 600);
+                      }, 25);
+                    }, 700);
+                  }, 25);
+                }, 600);
+              }, 700);
+            }, 25);
+          }, 600);
+        }, 25);
+      }, 800);
     }
 
     window.addEventListener('load', () => {
-      setTimeout(startQRSequence, 800);
+      setTimeout(startLoginSequence, 500);
     });
 
     // Matrix Rain
@@ -515,7 +515,7 @@
     }
 
     // ────────────────────────────────
-    // LOGIKA APLIKASI EXCEL TO LINE (sama seperti sebelumnya)
+    // LOGIKA APLIKASI EXCEL TO LINE
     // ────────────────────────────────
     const inputEl = document.getElementById("input");
     const dirtyInputEl = document.getElementById("dirtyInput");
