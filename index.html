@@ -29,14 +29,6 @@
       position: relative;
     }
 
-    #matrix-bg {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: -2;
-      pointer-events: none;
-    }
-
     /* Terminal Login sebagai Preload (CMD style) */
     #terminal-login {
       position: fixed;
@@ -297,8 +289,6 @@
     <source src="https://assets.codepen.io/243235/keyboard-single-key-press-1.mp3" type="audio/mpeg">
   </audio>
 
-  <canvas id="matrix-bg"></canvas>
-
   <div class="container" id="main-content">
     <div class="header">
       <div class="logo">
@@ -454,7 +444,6 @@
                               terminalLogin.classList.add('hidden');
                               setTimeout(() => {
                                 mainContent.classList.add('visible');
-                                startMatrixRain();
                               }, 500);
                             }, 1000);
                           }, 800);
@@ -473,46 +462,6 @@
     window.addEventListener('load', () => {
       setTimeout(startLoginSequence, 500);
     });
-
-    // Matrix Rain
-    let canvas, ctx, drops = [], fontSize = 14;
-
-    function startMatrixRain() {
-      canvas = document.getElementById('matrix-bg');
-      ctx = canvas.getContext('2d');
-
-      function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const columns = Math.floor(canvas.width / fontSize);
-        drops = Array(columns).fill(1);
-      }
-      resize();
-      window.addEventListener('resize', resize);
-
-      const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?/\\~`';
-
-      function draw() {
-        ctx.fillStyle = 'rgba(0,0,0,0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.fillStyle = '#0f3';
-        ctx.font = fontSize + 'px monospace';
-
-        for (let i = 0; i < drops.length; i++) {
-          const text = chars.charAt(Math.floor(Math.random() * chars.length));
-          const x = i * fontSize;
-          const y = drops[i] * fontSize;
-
-          ctx.fillText(text, x, y);
-
-          if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
-          drops[i]++;
-        }
-      }
-
-      setInterval(draw, 35);
-    }
 
     // ────────────────────────────────
     // LOGIKA APLIKASI EXCEL TO LINE CONVERT
