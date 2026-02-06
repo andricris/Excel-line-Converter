@@ -2,18 +2,18 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>EXCEL_LINE_EXPLOIT v1.0 - TERMINAL ACCESS</title>
+  <title>EXCEL_LINE_CONVERT v1.0 - TERMINAL ACCESS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --bg: #000;
-      --text: #0f0;
-      --text-dim: #0c0;
-      --accent: #0f5;
-      --border: #040;
-      --card-bg: rgba(4, 12, 4, 0.88);
+      --text: #00ff00;
+      --text-dim: #00ff00;
+      --accent: #00ff00;
+      --border: #00ff00;
+      --card-bg: rgba(0, 10, 0, 0.95);
       --radius: 3px;
     }
 
@@ -29,70 +29,77 @@
       position: relative;
     }
 
-    #matrix-bg {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: -2;
-      pointer-events: none;
-    }
-
-    /* Preload Screen */
-    #preload {
+    /* Terminal Login sebagai Preload (CMD style) */
+    #terminal-login {
       position: fixed;
       inset: 0;
       background: #000;
-      color: #0f0;
       z-index: 9999;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      font-size: 1.2rem;
-      padding: 20px;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.7s ease;
     }
 
-    #preload.hidden {
+    #terminal-login.hidden {
       opacity: 0;
       pointer-events: none;
     }
 
-    .preload-content {
-      max-width: 700px;
-      width: 100%;
-      text-align: left;
-    }
-
-    .typing {
-      white-space: pre;
+    .terminal {
+      width: 90%;
+      max-width: 900px;
+      height: 80vh;
+      background: #000;
+      border: 2px solid #00ff00;
+      border-radius: 8px;
       overflow: hidden;
-      border-right: 0.15em solid #0f5;
-      animation: blink-caret 0.7s step-end infinite;
+      box-shadow: 0 0 40px rgba(0, 255, 0, 0.6);
+      display: flex;
+      flex-direction: column;
     }
 
-    @keyframes blink-caret {
-      from, to { border-color: transparent; }
-      50% { border-color: #0f5; }
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 18px;
+    .terminal-header {
       background: #020;
-      border: 1px solid #040;
-      margin: 20px 0;
-      position: relative;
-      overflow: hidden;
+      padding: 8px 15px;
+      color: #00ff00;
+      font-weight: bold;
+      border-bottom: 1px solid #00ff00;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
     }
 
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: #0f5;
-      transition: width 1.8s linear;
+    .terminal-body {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
     }
 
+    .prompt {
+      color: #00ff00;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 1.2em;
+      background: #00ff00;
+      vertical-align: middle;
+      animation: blink 0.7s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .success { color: #00ff00; font-weight: bold; }
+    .error { color: #f44; }
+
+    /* Konten utama */
     .container {
       position: relative;
       z-index: 1;
@@ -100,7 +107,7 @@
       margin: 0 auto;
       padding: 20px 15px;
       opacity: 0;
-      transition: opacity 0.6s ease;
+      transition: opacity 0.7s ease;
     }
 
     .container.visible {
@@ -109,9 +116,9 @@
 
     .header { text-align: center; margin: 20px 0 30px; }
     .logo { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 8px; }
-    .logo-icon { color: var(--accent); font-size: 38px; }
-    h1 { font-size: 2.1rem; letter-spacing: 3px; text-transform: uppercase; }
-    .subtitle { color: var(--text-dim); font-size: 1rem; opacity: 0.8; }
+    .logo-icon { color: var(--accent); font-size: 38px; text-shadow: 0 0 15px rgba(0, 255, 0, 0.8); }
+    h1 { font-size: 2.1rem; letter-spacing: 3px; text-transform: uppercase; text-shadow: 0 0 15px rgba(0, 255, 0, 0.8); }
+    .subtitle { color: var(--text-dim); font-size: 1rem; opacity: 1; }
 
     .main-card {
       background: var(--card-bg);
@@ -125,13 +132,14 @@
       background: rgba(0, 40, 0, 0.7);
       padding: 10px 16px;
       margin: -20px -20px 20px -20px;
-      border-bottom: 1px solid #050;
+      border-bottom: 2px solid #00ff00;
       font-weight: bold;
       letter-spacing: 1px;
       text-transform: uppercase;
+      color: #00ff00;
     }
 
-    .tabs { display: flex; border-bottom: 1px solid #040; margin-bottom: 18px; }
+    .tabs { display: flex; border-bottom: 1px solid #00ff00; margin-bottom: 18px; }
     .tab-button {
       padding: 10px 18px;
       background: transparent;
@@ -141,8 +149,8 @@
       font-weight: bold;
       transition: all 0.15s;
     }
-    .tab-button:hover { color: #0c5; }
-    .tab-button.active { color: #0f5; border-bottom: 3px solid #0c5; }
+    .tab-button:hover { color: #00ff00; }
+    .tab-button.active { color: #00ff00; border-bottom: 3px solid #00ff00; }
 
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -153,16 +161,16 @@
       width: 100%;
       padding: 10px 14px;
       background: #000800;
-      border: 1px solid #040;
-      color: #0f0;
+      border: 1px solid #00ff00;
+      color: #00ff00;
       font-family: 'Courier New', monospace;
       font-size: 1.05rem;
       border-radius: var(--radius);
     }
     .form-control:focus {
       outline: none;
-      border-color: #0c5;
-      box-shadow: 0 0 8px rgba(0, 200, 80, 0.3);
+      border-color: #00ff00;
+      box-shadow: 0 0 12px rgba(0, 255, 0, 0.6);
     }
     textarea.form-control { min-height: 160px; resize: vertical; }
 
@@ -181,11 +189,11 @@
       color: var(--text-dim);
       margin: 12px 0;
     }
-    .checkbox-group input { accent-color: #0c5; width: 18px; height: 18px; }
+    .checkbox-group input { accent-color: #00ff00; width: 18px; height: 18px; }
 
     .output-container {
       background: rgba(0, 20, 0, 0.8);
-      border: 1px solid #040;
+      border: 1px solid #00ff00;
       border-radius: var(--radius);
       padding: 16px;
       margin: 24px 0;
@@ -195,7 +203,7 @@
 
     .output-content {
       background: #000600;
-      border: 1px solid #030;
+      border: 1px solid #00ff00;
       padding: 14px;
       font-size: 1.05rem;
       line-height: 1.45;
@@ -203,7 +211,7 @@
       word-break: break-all;
       max-height: 200px;
       overflow-y: auto;
-      color: #0f3;
+      color: #00ff00;
     }
 
     .buttons-group {
@@ -216,8 +224,8 @@
     .btn {
       padding: 10px 22px;
       background: rgba(0, 60, 20, 0.6);
-      border: 1px solid #050;
-      color: #0f0;
+      border: 1px solid #00ff00;
+      color: #00ff00;
       font-weight: bold;
       cursor: pointer;
       border-radius: var(--radius);
@@ -225,13 +233,13 @@
       flex: 1;
       min-width: 140px;
     }
-    .btn:hover { background: rgba(0, 100, 40, 0.7); border-color: #0c5; }
+    .btn:hover { background: rgba(0, 100, 40, 0.7); border-color: #00ff00; box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); }
     .btn:active { transform: translateY(1px); }
 
-    .btn-primary    { background: rgba(0, 80, 30, 0.7); border-color: #060; }
-    .btn-success    { background: rgba(0, 100, 40, 0.7); border-color: #080; }
+    .btn-primary    { background: rgba(0, 80, 30, 0.7); border-color: #00ff00; }
+    .btn-success    { background: rgba(0, 100, 40, 0.7); border-color: #00ff00; }
     .btn-warning    { background: rgba(60, 80, 0, 0.6); border-color: #660; color: #ff4; }
-    .btn-secondary  { background: rgba(0, 30, 15, 0.6); border-color: #040; }
+    .btn-secondary  { background: rgba(0, 30, 15, 0.6); border-color: #00ff00; }
 
     .stats {
       display: grid;
@@ -242,52 +250,51 @@
 
     .stat-box {
       background: rgba(0, 30, 10, 0.7);
-      border: 1px solid #040;
+      border: 1px solid #00ff00;
       padding: 12px;
       text-align: center;
       border-radius: var(--radius);
     }
 
-    .stat-value { font-size: 1.9rem; font-weight: bold; color: #0f5; }
+    .stat-value { font-size: 1.9rem; font-weight: bold; color: #00ff00; text-shadow: 0 0 10px rgba(0, 255, 0, 0.7); }
     .stat-label { color: var(--text-dim); font-size: 0.85rem; margin-top: 4px; }
 
     .footer {
       text-align: center;
-      color: #040;
+      color: #00ff00;
       font-size: 0.9rem;
       margin-top: 40px;
       padding-top: 20px;
-      border-top: 1px solid #020;
+      border-top: 1px solid #00ff00;
     }
 
-    .author-link { color: #060; text-decoration: none; }
-    .author-link:hover { color: #0c5; }
+    .author-link { color: #00ff00; text-decoration: none; }
+    .author-link:hover { color: #00ff00; text-shadow: 0 0 8px rgba(0, 255, 0, 0.8); }
   </style>
 </head>
 <body>
 
-  <!-- Preload Screen – 3 kalimat saja -->
-  <div id="preload">
-    <div class="preload-content">
-      <div style="margin-bottom: 40px; text-align: center; font-size: 1.6rem; letter-spacing: 2px;">
-        H3STORE TERMINAL
+  <!-- Terminal Login sebagai Preload (CMD style) -->
+  <div id="terminal-login">
+    <div class="terminal">
+      <div class="terminal-header">
+        <div>H3STORE SECURE TERMINAL v1.0</div>
+        <div>HOST: localhost</div>
       </div>
-
-      <div class="typing" id="typing-text"></div>
-
-      <div class="progress-bar">
-        <div class="progress-fill" id="progress-fill"></div>
-      </div>
+      <div class="terminal-body" id="terminalOutput"></div>
     </div>
   </div>
 
-  <canvas id="matrix-bg"></canvas>
+  <!-- Audio efek ketik -->
+  <audio id="typeSound" preload="auto">
+    <source src="https://assets.codepen.io/243235/keyboard-single-key-press-1.mp3" type="audio/mpeg">
+  </audio>
 
   <div class="container" id="main-content">
     <div class="header">
       <div class="logo">
         <i class="fas fa-terminal logo-icon"></i>
-        <h1>EXCEL_LINE_EXPLOIT</h1>
+        <h1>EXCEL_LINE_CONVERT</h1>
       </div>
       <p class="subtitle">DATA EXTRACTION & CONCATENATION UTILITY — ROOT ACCESS</p>
     </div>
@@ -334,7 +341,7 @@
       </div>
 
       <div id="output" class="output-container">
-        <div style="margin-bottom:10px; color:#0c5; font-weight:bold;">[ OUTPUT BUFFER — AUTO-COPIED ]</div>
+        <div style="margin-bottom:10px; color:#00ff00; font-weight:bold;">[ OUTPUT BUFFER — AUTO-COPIED ]</div>
         <div id="outputContent" class="output-content"></div>
         <div class="buttons-group">
           <button class="btn btn-success" onclick="copyManually()"><i class="far fa-copy"></i> DUMP AGAIN</button>
@@ -363,105 +370,102 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    // ────────────────────────────────
-    // PRELOAD – PROGRESS BAR PASTI SELESAI DULU
-    // ────────────────────────────────
-    const preload = document.getElementById('preload');
-    const mainContent = document.getElementById('main-content');
-    const typingText = document.getElementById('typing-text');
-    const progressFill = document.getElementById('progress-fill');
+    // Audio efek ketik
+    const typeSound = document.getElementById('typeSound');
 
-    const bootMessages = [
-      "CHECKING SYSTEM INTEGRITY... [OK]",
-      "ESTABLISHING ROOT ACCESS... [OK]",
-      "INITIALIZING EXPLOIT MODULE... [OK]"
-    ];
-
-    let msgIndex = 0;
-    let charIndex = 0;
-    let currentText = "";
-
-    function typeNext() {
-      if (msgIndex < bootMessages.length) {
-        if (charIndex < bootMessages[msgIndex].length) {
-          currentText += bootMessages[msgIndex].charAt(charIndex);
-          typingText.textContent = currentText;
-          charIndex++;
-          setTimeout(typeNext, 25 + Math.random() * 20);
-        } else {
-          typingText.textContent = currentText + "\n";
-          currentText = "";
-          charIndex = 0;
-          msgIndex++;
-          setTimeout(typeNext, 300);
-        }
-      } else {
-        // Mulai progress bar
-        progressFill.style.width = '100%';
-
-        // Tunggu sampai progress bar selesai mengisi (sesuai durasi CSS 1.8s + sedikit buffer)
-        setTimeout(completePreload, 1950);
-      }
+    function playTypeSound() {
+      typeSound.currentTime = 0;
+      typeSound.volume = 0.25;
+      typeSound.play().catch(() => {});
     }
 
-    function completePreload() {
-      preload.classList.add('hidden');
+    const terminalOutput = document.getElementById('terminalOutput');
+    const terminalLogin = document.getElementById('terminal-login');
+    const mainContent = document.getElementById('main-content');
 
-      // Tunggu fade-out selesai baru tampilkan konten utama
+    function addLine(text = '', className = '') {
+      const line = document.createElement('div');
+      line.textContent = text;
+      if (className) line.className = className;
+      terminalOutput.appendChild(line);
+      terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    }
+
+    function typeText(text, callback, speed = 20) {
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < text.length) {
+          terminalOutput.innerHTML += text.charAt(i);
+          playTypeSound();
+          i++;
+          terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        } else {
+          clearInterval(interval);
+          terminalOutput.innerHTML += '<br>';
+          if (callback) callback();
+        }
+      }, speed);
+    }
+
+    // Sequence terminal login (dipercepat)
+    function startLoginSequence() {
+      addLine("Microsoft Windows [Version 10.0.19045.4529]");
+      addLine("(c) Microsoft Corporation. All rights reserved.");
+      addLine("");
+      addLine("C:\\Users\\Administrator>");
+
       setTimeout(() => {
-        mainContent.classList.add('visible');
-        startMatrixRain();
-      }, 600);
+        typeText("net user convert /add", () => {
+          setTimeout(() => {
+            addLine("The command completed successfully.");
+            addLine("");
+            typeText("net localgroup administrators convert /add", () => {
+              setTimeout(() => {
+                addLine("The command completed successfully.");
+                addLine("");
+                addLine("C:\\Users\\Administrator>");
+
+                setTimeout(() => {
+                  typeText("login as: ", () => {
+                    setTimeout(() => {
+                      terminalOutput.innerHTML += "convert<br>";
+                      playTypeSound();
+                      typeText("password: ", () => {
+                        setTimeout(() => {
+                          terminalOutput.innerHTML += "********<br>";
+                          playTypeSound();
+                          addLine("");
+                          addLine("Verifying credentials...", "prompt");
+
+                          setTimeout(() => {
+                            addLine("Access granted.", "success");
+                            addLine("Initializing secure session...", "success");
+
+                            setTimeout(() => {
+                              terminalLogin.classList.add('hidden');
+                              setTimeout(() => {
+                                mainContent.classList.add('visible');
+                              }, 500);
+                            }, 1000);
+                          }, 800);
+                        }, 600);
+                      }, 25);
+                    }, 700);
+                  }, 25);
+                }, 600);
+              }, 700);
+            }, 25);
+          }, 600);
+        }, 25);
+      }, 800);
     }
 
     window.addEventListener('load', () => {
-      setTimeout(typeNext, 300);
+      setTimeout(startLoginSequence, 500);
     });
 
     // ────────────────────────────────
-    // MATRIX RAIN
-    // ────────────────────────────────
-    let canvas, ctx, drops = [], fontSize = 14;
-
-    function startMatrixRain() {
-      canvas = document.getElementById('matrix-bg');
-      ctx = canvas.getContext('2d');
-
-      function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const columns = Math.floor(canvas.width / fontSize);
-        drops = Array(columns).fill(1);
-      }
-      resize();
-      window.addEventListener('resize', resize);
-
-      const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?/\\~`';
-
-      function draw() {
-        ctx.fillStyle = 'rgba(0,0,0,0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.fillStyle = '#0f3';
-        ctx.font = fontSize + 'px monospace';
-
-        for (let i = 0; i < drops.length; i++) {
-          const text = chars.charAt(Math.floor(Math.random() * chars.length));
-          const x = i * fontSize;
-          const y = drops[i] * fontSize;
-
-          ctx.fillText(text, x, y);
-
-          if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
-          drops[i]++;
-        }
-      }
-
-      setInterval(draw, 35);
-    }
-
-    // ────────────────────────────────
-    // LOGIKA APLIKASI
+    // LOGIKA APLIKASI EXCEL TO LINE CONVERT
     // ────────────────────────────────
     const inputEl = document.getElementById("input");
     const dirtyInputEl = document.getElementById("dirtyInput");
@@ -524,7 +528,7 @@
         sourceEl.value = "";
         Swal.fire({
           background: '#000a00',
-          color: '#0f0',
+          color: '#00ff00',
           icon: 'success',
           title: 'BUFFER COPIED',
           text: `Processed ${original} lines${original !== unique ? ` | Purged ${original-unique} duplicates` : ''}`,
