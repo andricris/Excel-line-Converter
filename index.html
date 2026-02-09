@@ -106,7 +106,7 @@
       max-width: 1100px;
       margin: 0 auto;
       padding: 20px 15px;
-      opacity: 0;
+      opacity: 1;
       transition: opacity 0.7s ease;
     }
 
@@ -460,9 +460,17 @@
       }, 800);
     }
 
-    window.addEventListener('load', () => {
-      setTimeout(startLoginSequence, 500);
-    });
+    const enablePreloader = false;
+
+    if (enablePreloader) {
+      window.addEventListener('load', () => {
+        setTimeout(startLoginSequence, 500);
+      });
+    } else {
+      terminalLogin.classList.add('hidden');
+      terminalLogin.style.display = 'none';
+      mainContent.classList.add('visible');
+    }
 
     // ────────────────────────────────
     // LOGIKA APLIKASI EXCEL TO LINE CONVERT
