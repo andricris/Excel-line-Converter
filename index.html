@@ -500,7 +500,7 @@
       if (!isDirty) return raw.split(/\r?\n/).map(l => l.trim()).filter(l => l);
       return raw.split(/\r?\n/)
         .flatMap(l => l.split(/\t+/))
-        .map(l => l.replace(/\(Released\)/gi,"").replace(/;/g,"").replace(/\s+/g,"").trim())
+        .map(l => l.replace(/\((Released|Planned|Received)\)/gi,"").replace(/;/g,"").replace(/\s+/g,"").trim())
         .filter(l => l);
     }
 
