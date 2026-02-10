@@ -7,18 +7,30 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    @property --base-hue {
+      syntax: "<number>";
+      inherits: true;
+      initial-value: 0;
+    }
+
+    @keyframes hue-spin {
+      from { --base-hue: 0; }
+      to { --base-hue: 360; }
+    }
+
     @keyframes rainbow-shift {
       from { background-position: 0% 50%; }
       to { background-position: 200% 50%; }
     }
 
     :root {
-      --rgb-red: #ff4d4d;
-      --rgb-green: #5dff5d;
-      --rgb-blue: #4da6ff;
-      --rgb-yellow: #ffe44d;
-      --rgb-purple: #d35dff;
-      --rgb-cyan: #4dfff0;
+      --base-hue: 0;
+      --rgb-red: hsl(calc(var(--base-hue) + 0) 100% 64%);
+      --rgb-yellow: hsl(calc(var(--base-hue) + 60) 100% 64%);
+      --rgb-green: hsl(calc(var(--base-hue) + 120) 100% 64%);
+      --rgb-cyan: hsl(calc(var(--base-hue) + 180) 100% 64%);
+      --rgb-blue: hsl(calc(var(--base-hue) + 240) 100% 64%);
+      --rgb-purple: hsl(calc(var(--base-hue) + 300) 100% 64%);
       --neon: var(--rgb-purple);
       --bg: #000;
       --text: var(--rgb-cyan);
@@ -27,6 +39,7 @@
       --border: var(--rgb-green);
       --card-bg: rgba(0, 10, 0, 0.95);
       --radius: 3px;
+      animation: hue-spin 8s linear infinite;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -193,7 +206,7 @@
     .form-control:focus {
       outline: none;
       border-color: var(--rgb-red);
-      box-shadow: 0 0 12px rgba(255, 77, 77, 0.6);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--rgb-red) 70%, transparent);
     }
     textarea.form-control { min-height: 160px; resize: vertical; }
 
@@ -256,7 +269,7 @@
       flex: 1;
       min-width: 140px;
     }
-    .btn:hover { background: rgba(0, 100, 40, 0.7); box-shadow: 0 0 10px rgba(93, 255, 93, 0.5); }
+    .btn:hover { background: rgba(0, 100, 40, 0.7); box-shadow: 0 0 10px color-mix(in srgb, var(--rgb-green) 60%, transparent); }
     .btn:active { transform: translateY(1px); }
 
     .btn-primary    { background: rgba(0, 80, 30, 0.7); border-color: var(--rgb-green); color: var(--rgb-green); }
@@ -282,10 +295,10 @@
     .stat-box:nth-child(2) { border-color: var(--rgb-blue); }
     .stat-box:nth-child(3) { border-color: var(--rgb-yellow); }
     .stat-box:nth-child(4) { border-color: var(--rgb-purple); }
-    .stat-box:nth-child(1) .stat-value { color: var(--rgb-green); text-shadow: 0 0 10px rgba(93, 255, 93, 0.7); }
-    .stat-box:nth-child(2) .stat-value { color: var(--rgb-blue); text-shadow: 0 0 10px rgba(77, 166, 255, 0.7); }
-    .stat-box:nth-child(3) .stat-value { color: var(--rgb-yellow); text-shadow: 0 0 10px rgba(255, 228, 77, 0.7); }
-    .stat-box:nth-child(4) .stat-value { color: var(--rgb-purple); text-shadow: 0 0 10px rgba(211, 93, 255, 0.7); }
+    .stat-box:nth-child(1) .stat-value { color: var(--rgb-green); text-shadow: 0 0 10px color-mix(in srgb, var(--rgb-green) 70%, transparent); }
+    .stat-box:nth-child(2) .stat-value { color: var(--rgb-blue); text-shadow: 0 0 10px color-mix(in srgb, var(--rgb-blue) 70%, transparent); }
+    .stat-box:nth-child(3) .stat-value { color: var(--rgb-yellow); text-shadow: 0 0 10px color-mix(in srgb, var(--rgb-yellow) 70%, transparent); }
+    .stat-box:nth-child(4) .stat-value { color: var(--rgb-purple); text-shadow: 0 0 10px color-mix(in srgb, var(--rgb-purple) 70%, transparent); }
     .stat-label { color: var(--text-dim); font-size: 0.85rem; margin-top: 4px; }
 
     .footer {
@@ -298,7 +311,7 @@
     }
 
     .author-link { color: var(--rgb-red); text-decoration: none; }
-    .author-link:hover { color: var(--rgb-green); text-shadow: 0 0 8px rgba(93, 255, 93, 0.8); }
+    .author-link:hover { color: var(--rgb-green); text-shadow: 0 0 8px color-mix(in srgb, var(--rgb-green) 80%, transparent); }
   </style>
 </head>
 <body>
