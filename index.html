@@ -7,14 +7,39 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    @property --base-hue {
+      syntax: "<number>";
+      inherits: true;
+      initial-value: 0;
+    }
+
+    @keyframes hue-spin {
+      from { --base-hue: 0; }
+      to { --base-hue: 360; }
+    }
+
+    @keyframes rainbow-shift {
+      from { background-position: 0% 50%; }
+      to { background-position: 200% 50%; }
+    }
+
     :root {
+      --base-hue: 0;
+      --rgb-red: hsl(calc(var(--base-hue) + 0) 100% 64%);
+      --rgb-yellow: hsl(calc(var(--base-hue) + 60) 100% 64%);
+      --rgb-green: hsl(calc(var(--base-hue) + 120) 100% 64%);
+      --rgb-cyan: hsl(calc(var(--base-hue) + 180) 100% 64%);
+      --rgb-blue: hsl(calc(var(--base-hue) + 240) 100% 64%);
+      --rgb-purple: hsl(calc(var(--base-hue) + 300) 100% 64%);
+      --neon: var(--rgb-purple);
       --bg: #000;
-      --text: #ff2dff;
-      --text-dim: #ff2dff;
-      --accent: #ff2dff;
-      --border: #ff2dff;
+      --text: var(--rgb-cyan);
+      --text-dim: var(--rgb-blue);
+      --accent: var(--rgb-yellow);
+      --border: var(--rgb-green);
       --card-bg: rgba(0, 10, 0, 0.95);
       --radius: 3px;
+      animation: hue-spin 8s linear infinite;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -51,7 +76,7 @@
       max-width: 900px;
       height: 80vh;
       background: #000;
-      border: 2px solid #ff2dff;
+      border: 2px solid var(--neon);
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 0 40px rgba(255, 45, 255, 0.6);
@@ -62,9 +87,9 @@
     .terminal-header {
       background: #020;
       padding: 8px 15px;
-      color: #ff2dff;
+      color: var(--neon);
       font-weight: bold;
-      border-bottom: 1px solid #ff2dff;
+      border-bottom: 1px solid var(--neon);
       display: flex;
       justify-content: space-between;
       font-size: 0.95rem;
@@ -80,14 +105,14 @@
     }
 
     .prompt {
-      color: #ff2dff;
+      color: var(--neon);
     }
 
     .cursor {
       display: inline-block;
       width: 10px;
       height: 1.2em;
-      background: #ff2dff;
+      background: var(--neon);
       vertical-align: middle;
       animation: blink 0.7s step-end infinite;
     }
@@ -96,7 +121,7 @@
       50% { opacity: 0; }
     }
 
-    .success { color: #ff2dff; font-weight: bold; }
+    .success { color: var(--neon); font-weight: bold; }
     .error { color: #f44; }
 
     /* Konten utama */
@@ -116,9 +141,19 @@
 
     .header { text-align: center; margin: 20px 0 30px; }
     .logo { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 8px; }
-    .logo-icon { color: var(--accent); font-size: 38px; text-shadow: 0 0 15px rgba(255, 45, 255, 0.8); }
-    h1 { font-size: 2.1rem; letter-spacing: 3px; text-transform: uppercase; text-shadow: 0 0 15px rgba(255, 45, 255, 0.8); }
-    .subtitle { color: var(--text-dim); font-size: 1rem; opacity: 1; }
+    .logo-icon { color: var(--rgb-blue); font-size: 38px; text-shadow: 0 0 15px rgba(77, 166, 255, 0.8); }
+    h1 {
+      font-size: 2.1rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, var(--rgb-red), var(--rgb-yellow), var(--rgb-green), var(--rgb-cyan), var(--rgb-blue), var(--rgb-purple), var(--rgb-red));
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: rainbow-shift 7s linear infinite;
+    }
+    .subtitle { color: var(--rgb-cyan); font-size: 1rem; opacity: 1; }
 
     .main-card {
       background: var(--card-bg);
@@ -132,14 +167,14 @@
       background: rgba(0, 40, 0, 0.7);
       padding: 10px 16px;
       margin: -20px -20px 20px -20px;
-      border-bottom: 2px solid #ff2dff;
+      border-bottom: 2px solid var(--rgb-blue);
       font-weight: bold;
       letter-spacing: 1px;
       text-transform: uppercase;
-      color: #ff2dff;
+      color: var(--rgb-red);
     }
 
-    .tabs { display: flex; border-bottom: 1px solid #ff2dff; margin-bottom: 18px; }
+    .tabs { display: flex; border-bottom: 1px solid var(--rgb-yellow); margin-bottom: 18px; }
     .tab-button {
       padding: 10px 18px;
       background: transparent;
@@ -149,8 +184,9 @@
       font-weight: bold;
       transition: all 0.15s;
     }
-    .tab-button:hover { color: #ff2dff; }
-    .tab-button.active { color: #ff2dff; border-bottom: 3px solid #ff2dff; }
+    .tab-button:hover { color: var(--rgb-cyan); }
+    .tab-button.active { color: var(--rgb-green); border-bottom: 3px solid currentColor; }
+    .tab-button:nth-child(2).active { color: var(--rgb-purple); }
 
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -161,16 +197,16 @@
       width: 100%;
       padding: 10px 14px;
       background: #000800;
-      border: 1px solid #ff2dff;
-      color: #ff2dff;
+      border: 1px solid var(--rgb-blue);
+      color: var(--rgb-cyan);
       font-family: 'Courier New', monospace;
       font-size: 1.05rem;
       border-radius: var(--radius);
     }
     .form-control:focus {
       outline: none;
-      border-color: #ff2dff;
-      box-shadow: 0 0 12px rgba(255, 45, 255, 0.6);
+      border-color: var(--rgb-red);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--rgb-red) 70%, transparent);
     }
     textarea.form-control { min-height: 160px; resize: vertical; }
 
@@ -189,11 +225,11 @@
       color: var(--text-dim);
       margin: 12px 0;
     }
-    .checkbox-group input { accent-color: #ff2dff; width: 18px; height: 18px; }
+    .checkbox-group input { accent-color: var(--rgb-green); width: 18px; height: 18px; }
 
     .output-container {
       background: rgba(0, 20, 0, 0.8);
-      border: 1px solid #ff2dff;
+      border: 1px solid var(--rgb-purple);
       border-radius: var(--radius);
       padding: 16px;
       margin: 24px 0;
@@ -203,7 +239,7 @@
 
     .output-content {
       background: #000600;
-      border: 1px solid #ff2dff;
+      border: 1px solid var(--rgb-yellow);
       padding: 14px;
       font-size: 1.05rem;
       line-height: 1.45;
@@ -211,7 +247,7 @@
       word-break: break-all;
       max-height: 200px;
       overflow-y: auto;
-      color: #ff2dff;
+      color: var(--rgb-red);
     }
 
     .buttons-group {
@@ -224,8 +260,8 @@
     .btn {
       padding: 10px 22px;
       background: rgba(0, 60, 20, 0.6);
-      border: 1px solid #ff2dff;
-      color: #ff2dff;
+      border: 1px solid var(--rgb-blue);
+      color: var(--rgb-cyan);
       font-weight: bold;
       cursor: pointer;
       border-radius: var(--radius);
@@ -233,13 +269,13 @@
       flex: 1;
       min-width: 140px;
     }
-    .btn:hover { background: rgba(0, 100, 40, 0.7); border-color: #ff2dff; box-shadow: 0 0 10px rgba(255, 45, 255, 0.5); }
+    .btn:hover { background: rgba(0, 100, 40, 0.7); box-shadow: 0 0 10px color-mix(in srgb, var(--rgb-green) 60%, transparent); }
     .btn:active { transform: translateY(1px); }
 
-    .btn-primary    { background: rgba(0, 80, 30, 0.7); border-color: #ff2dff; }
-    .btn-success    { background: rgba(0, 100, 40, 0.7); border-color: #ff2dff; }
+    .btn-primary    { background: rgba(0, 80, 30, 0.7); border-color: var(--rgb-green); color: var(--rgb-green); }
+    .btn-success    { background: rgba(0, 100, 40, 0.7); border-color: var(--rgb-cyan); color: var(--rgb-cyan); }
     .btn-warning    { background: rgba(60, 80, 0, 0.6); border-color: #660; color: #ff4; }
-    .btn-secondary  { background: rgba(0, 30, 15, 0.6); border-color: #ff2dff; }
+    .btn-secondary  { background: rgba(0, 30, 15, 0.6); border-color: var(--rgb-purple); color: var(--rgb-purple); }
 
     .stats {
       display: grid;
@@ -250,26 +286,32 @@
 
     .stat-box {
       background: rgba(0, 30, 10, 0.7);
-      border: 1px solid #ff2dff;
+      border: 1px solid var(--rgb-green);
       padding: 12px;
       text-align: center;
       border-radius: var(--radius);
     }
 
-    .stat-value { font-size: 1.9rem; font-weight: bold; color: #ff2dff; text-shadow: 0 0 10px rgba(255, 45, 255, 0.7); }
+    .stat-box:nth-child(2) { border-color: var(--rgb-blue); }
+    .stat-box:nth-child(3) { border-color: var(--rgb-yellow); }
+    .stat-box:nth-child(4) { border-color: var(--rgb-purple); }
+    .stat-box:nth-child(1) .stat-value { color: var(--rgb-green); text-shadow: 0 0 10px color-mix(in srgb, var(--rgb-green) 70%, transparent); }
+    .stat-box:nth-child(2) .stat-value { color: var(--rgb-blue); text-shadow: 0 0 10px color-mix(in srgb, var(--rgb-blue) 70%, transparent); }
+    .stat-box:nth-child(3) .stat-value { color: var(--rgb-yellow); text-shadow: 0 0 10px color-mix(in srgb, var(--rgb-yellow) 70%, transparent); }
+    .stat-box:nth-child(4) .stat-value { color: var(--rgb-purple); text-shadow: 0 0 10px color-mix(in srgb, var(--rgb-purple) 70%, transparent); }
     .stat-label { color: var(--text-dim); font-size: 0.85rem; margin-top: 4px; }
 
     .footer {
       text-align: center;
-      color: #ff2dff;
+      color: var(--rgb-cyan);
       font-size: 0.9rem;
       margin-top: 40px;
       padding-top: 20px;
-      border-top: 1px solid #ff2dff;
+      border-top: 1px solid var(--rgb-yellow);
     }
 
-    .author-link { color: #ff2dff; text-decoration: none; }
-    .author-link:hover { color: #ff2dff; text-shadow: 0 0 8px rgba(255, 45, 255, 0.8); }
+    .author-link { color: var(--rgb-red); text-decoration: none; }
+    .author-link:hover { color: var(--rgb-green); text-shadow: 0 0 8px color-mix(in srgb, var(--rgb-green) 80%, transparent); }
   </style>
 </head>
 <body>
@@ -341,7 +383,7 @@
       </div>
 
       <div id="output" class="output-container">
-        <div style="margin-bottom:10px; color:#ff2dff; font-weight:bold;">[ OUTPUT BUFFER — AUTO-COPIED ]</div>
+        <div style="margin-bottom:10px; color:var(--rgb-red); font-weight:bold;">[ OUTPUT BUFFER — AUTO-COPIED ]</div>
         <div id="outputContent" class="output-content"></div>
         <div class="buttons-group">
           <button class="btn btn-success" onclick="copyManually()"><i class="far fa-copy"></i> DUMP AGAIN</button>
@@ -536,7 +578,7 @@
         sourceEl.value = "";
         Swal.fire({
           background: '#000a00',
-          color: '#ff2dff',
+          color: 'var(--neon)',
           icon: 'success',
           title: 'BUFFER COPIED',
           text: `Processed ${original} lines${original !== unique ? ` | Purged ${original-unique} duplicates` : ''}`,
@@ -566,7 +608,7 @@
       if (!txt) return;
       try {
         await navigator.clipboard.writeText(txt);
-        Swal.fire({background:'#000a00', color:'#ff2dff', toast:true, position:'top-end', icon:'success', title:'DUMPED', timer:1000});
+        Swal.fire({background:'#000a00', color:'var(--neon)', toast:true, position:'top-end', icon:'success', title:'DUMPED', timer:1000});
       } catch {}
     }
 
