@@ -2,1164 +2,436 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>EXCEL_LINE_CONVERT v1.0 - TERMINAL ACCESS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Excel Line Converter — NeoBrutal Edition</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-    
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800&display=swap');
+
     :root {
-      --bg: #FF6B35;
-      --bg-alt: #F7931E;
-      --text: #1a1a1a;
-      --text-light: #ffffff;
-      --accent: #00F0FF;
-      --accent-2: #FF006E;
-      --accent-3: #FFBE0B;
-      --accent-4: #8338EC;
-      --border: #000000;
-      --card-bg: #ffffff;
-      --radius: 0px;
-      --shadow: 8px 8px 0 #000;
-      --shadow-hover: 12px 12px 0 #000;
-      --shadow-active: 4px 4px 0 #000;
+      --bg: #fff6e9;
+      --paper: #ffffff;
+      --ink: #101010;
+      --primary: #ffd400;
+      --secondary: #65d6ff;
+      --accent: #ff5d8f;
+      --mint: #53f5b0;
+      --purple: #b784ff;
+      --orange: #ff9f1c;
+      --lime: #d9ff70;
+      --sky: #8be9ff;
+      --border: 4px solid #101010;
+      --shadow: 8px 8px 0 #101010;
+      --shadow-sm: 4px 4px 0 #101010;
+      --radius: 18px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
 
     body {
-      background: var(--bg);
-      background-image: 
-        repeating-linear-gradient(
-          45deg,
-          transparent,
-          transparent 35px,
-          rgba(0,0,0,0.03) 35px,
-          rgba(0,0,0,0.03) 70px
-        ),
-        radial-gradient(circle at 20% 50%, var(--accent-4) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, var(--accent-2) 0%, transparent 50%);
-      color: var(--text);
-      font-family: 'Space Mono', monospace;
-      min-height: 100vh;
-      margin: 0;
-      overflow-x: hidden;
       position: relative;
-      padding: 20px;
+      margin: 0;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 20%, #ffe0eb 0 18%, transparent 18.1%),
+        radial-gradient(circle at 85% 75%, #dff6ff 0 20%, transparent 20.1%),
+        radial-gradient(circle at 35% 80%, #fff6af 0 10%, transparent 10.1%),
+        repeating-linear-gradient(45deg, rgba(16,16,16,.04) 0 12px, transparent 12px 24px),
+        var(--bg);
+      min-height: 100vh;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 160px;
+      height: 160px;
+      border: var(--border);
+      box-shadow: var(--shadow-sm);
+      z-index: -1;
+      transform: rotate(12deg);
     }
 
     body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: 
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 2px,
-          rgba(0,0,0,0.03) 2px,
-          rgba(0,0,0,0.03) 4px
-        );
-      pointer-events: none;
-      z-index: 9998;
+      background: var(--purple);
+      top: -40px;
+      right: 3vw;
     }
 
-    /* WARNING TAPE STYLES */
-    .warning-tape {
-      width: 100%;
-      height: 40px;
-      background: repeating-linear-gradient(
-        45deg,
-        #000 0px,
-        #000 20px,
-        #FFEB3B 20px,
-        #FFEB3B 40px
-      );
-      border-top: 4px solid #000;
-      border-bottom: 4px solid #000;
-      position: relative;
-      overflow: hidden;
+    body::after {
+      background: var(--lime);
+      bottom: -55px;
+      left: 2vw;
+      transform: rotate(-14deg);
     }
 
-    .warning-tape::before {
-      content: 'WARNING: DATA PROCESSING ZONE // AUTHORIZED PERSONNEL ONLY //';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%);
-      font-weight: 900;
-      font-size: 0.9rem;
-      color: #000;
-      white-space: nowrap;
-      animation: scrollTape 20s linear infinite;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
+    #terminal-login { display: none; }
 
-    .warning-tape.reverse {
-      background: repeating-linear-gradient(
-        -45deg,
-        #000 0px,
-        #000 20px,
-        #FFEB3B 20px,
-        #FFEB3B 40px
-      );
-    }
-
-    .warning-tape.reverse::before {
-      animation-direction: reverse;
-      content: 'CAUTION: HIGH VOLTAGE DATA // KEEP CLEAR // DO NOT ENTER //';
-    }
-
-    .warning-tape.danger {
-      background: repeating-linear-gradient(
-        45deg,
-        #000 0px,
-        #000 20px,
-        #FF006E 20px,
-        #FF006E 40px
-      );
-    }
-
-    .warning-tape.danger::before {
-      content: 'DANGER: CRITICAL SYSTEM // NO UNAUTHORIZED ACCESS //';
-      color: #fff;
-      text-shadow: 2px 2px 0 #000;
-    }
-
-    @keyframes scrollTape {
-      0% { transform: translateY(-50%) translateX(0); }
-      100% { transform: translateY(-50%) translateX(-50%); }
-    }
-
-    /* PIXEL ART ICONS */
-    .pixel-icon {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      image-rendering: pixelated;
-      position: relative;
-    }
-
-    .pixel-icon::before {
-      content: '';
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      background: currentColor;
-      box-shadow: 
-        8px 0 0 currentColor,
-        16px 0 0 currentColor,
-        4px 4px 0 currentColor,
-        12px 4px 0 currentColor,
-        20px 4px 0 currentColor,
-        0 8px 0 currentColor,
-        8px 8px 0 currentColor,
-        16px 8px 0 currentColor,
-        24px 8px 0 currentColor;
-    }
-
-    .pixel-icon.file::before {
-      box-shadow: 
-        4px 0 0 currentColor,
-        8px 0 0 currentColor,
-        12px 0 0 currentColor,
-        16px 0 0 currentColor,
-        20px 0 0 currentColor,
-        0 4px 0 currentColor,
-        20px 4px 0 currentColor,
-        0 8px 0 currentColor,
-        8px 8px 0 currentColor,
-        12px 8px 0 currentColor,
-        20px 8px 0 currentColor,
-        0 12px 0 currentColor,
-        20px 12px 0 currentColor,
-        0 16px 0 currentColor,
-        4px 16px 0 currentColor,
-        8px 16px 0 currentColor,
-        12px 16px 0 currentColor,
-        16px 16px 0 currentColor,
-        20px 16px 0 currentColor;
-    }
-
-    .pixel-icon.trash::before {
-      box-shadow: 
-        8px 0 0 currentColor,
-        12px 0 0 currentColor,
-        16px 0 0 currentColor,
-        4px 4px 0 currentColor,
-        20px 4px 0 currentColor,
-        0 8px 0 currentColor,
-        4px 8px 0 currentColor,
-        8px 8px 0 currentColor,
-        12px 8px 0 currentColor,
-        16px 8px 0 currentColor,
-        20px 8px 0 currentColor,
-        24px 8px 0 currentColor,
-        0 12px 0 currentColor,
-        8px 12px 0 currentColor,
-        12px 12px 0 currentColor,
-        16px 12px 0 currentColor,
-        24px 12px 0 currentColor,
-        0 16px 0 currentColor,
-        8px 16px 0 currentColor,
-        12px 16px 0 currentColor,
-        16px 16px 0 currentColor,
-        24px 16px 0 currentColor,
-        4px 20px 0 currentColor,
-        8px 20px 0 currentColor,
-        12px 20px 0 currentColor,
-        16px 20px 0 currentColor,
-        20px 20px 0 currentColor;
-    }
-
-    .pixel-icon.bolt::before {
-      background: transparent;
-      box-shadow: 
-        12px 0 0 currentColor,
-        8px 4px 0 currentColor,
-        12px 4px 0 currentColor,
-        4px 8px 0 currentColor,
-        8px 8px 0 currentColor,
-        12px 8px 0 currentColor,
-        0 12px 0 currentColor,
-        4px 12px 0 currentColor,
-        8px 12px 0 currentColor,
-        4px 16px 0 currentColor,
-        8px 16px 0 currentColor,
-        12px 16px 0 currentColor,
-        8px 20px 0 currentColor,
-        12px 20px 0 currentColor,
-        16px 20px 0 currentColor,
-        12px 24px 0 currentColor;
-    }
-
-    .pixel-icon.copy::before {
-      box-shadow: 
-        8px 0 0 currentColor,
-        12px 0 0 currentColor,
-        16px 0 0 currentColor,
-        4px 4px 0 currentColor,
-        8px 4px 0 currentColor,
-        12px 4px 0 currentColor,
-        16px 4px 0 currentColor,
-        20px 4px 0 currentColor,
-        0 8px 0 currentColor,
-        4px 8px 0 currentColor,
-        20px 8px 0 currentColor,
-        0 12px 0 currentColor,
-        4px 12px 0 currentColor,
-        20px 12px 0 currentColor,
-        0 16px 0 currentColor,
-        4px 16px 0 currentColor,
-        20px 16px 0 currentColor,
-        4px 20px 0 currentColor,
-        8px 20px 0 currentColor,
-        12px 20px 0 currentColor,
-        16px 20px 0 currentColor;
-    }
-
-    .pixel-icon.eye::before {
-      box-shadow: 
-        8px 0 0 currentColor,
-        12px 0 0 currentColor,
-        16px 0 0 currentColor,
-        4px 4px 0 currentColor,
-        8px 4px 0 currentColor,
-        12px 4px 0 currentColor,
-        16px 4px 0 currentColor,
-        20px 4px 0 currentColor,
-        0 8px 0 currentColor,
-        4px 8px 0 currentColor,
-        8px 8px 0 currentColor,
-        12px 8px 0 currentColor,
-        16px 8px 0 currentColor,
-        20px 8px 0 currentColor,
-        24px 8px 0 currentColor,
-        0 12px 0 currentColor,
-        4px 12px 0 currentColor,
-        20px 12px 0 currentColor,
-        24px 12px 0 currentColor,
-        4px 16px 0 currentColor,
-        8px 16px 0 currentColor,
-        12px 16px 0 currentColor,
-        16px 16px 0 currentColor,
-        20px 16px 0 currentColor;
-    }
-
-    .pixel-icon.redo::before {
-      box-shadow: 
-        8px 0 0 currentColor,
-        12px 0 0 currentColor,
-        16px 0 0 currentColor,
-        4px 4px 0 currentColor,
-        8px 4px 0 currentColor,
-        12px 4px 0 currentColor,
-        16px 4px 0 currentColor,
-        20px 4px 0 currentColor,
-        0 8px 0 currentColor,
-        20px 8px 0 currentColor,
-        24px 8px 0 currentColor,
-        0 12px 0 currentColor,
-        4px 12px 0 currentColor,
-        20px 12px 0 currentColor,
-        4px 16px 0 currentColor,
-        8px 16px 0 currentColor,
-        12px 16px 0 currentColor,
-        16px 16px 0 currentColor,
-        20px 16px 0 currentColor,
-        8px 20px 0 currentColor,
-        12px 20px 0 currentColor,
-        16px 20px 0 currentColor;
-    }
-
-    .pixel-icon.terminal::before {
-      box-shadow: 
-        0 0 0 currentColor,
-        4px 0 0 currentColor,
-        8px 0 0 currentColor,
-        12px 0 0 currentColor,
-        16px 0 0 currentColor,
-        20px 0 0 currentColor,
-        24px 0 0 currentColor,
-        0 4px 0 currentColor,
-        24px 4px 0 currentColor,
-        0 8px 0 currentColor,
-        8px 8px 0 currentColor,
-        12px 8px 0 currentColor,
-        24px 8px 0 currentColor,
-        0 12px 0 currentColor,
-        4px 12px 0 currentColor,
-        8px 12px 0 currentColor,
-        24px 12px 0 currentColor,
-        0 16px 0 currentColor,
-        24px 16px 0 currentColor,
-        0 20px 0 currentColor,
-        4px 20px 0 currentColor,
-        8px 20px 0 currentColor,
-        12px 20px 0 currentColor,
-        16px 20px 0 currentColor,
-        20px 20px 0 currentColor,
-        24px 20px 0 currentColor;
-    }
-
-    .pixel-icon.database::before {
-      box-shadow: 
-        4px 0 0 currentColor,
-        8px 0 0 currentColor,
-        12px 0 0 currentColor,
-        16px 0 0 currentColor,
-        20px 0 0 currentColor,
-        0 4px 0 currentColor,
-        4px 4px 0 currentColor,
-        8px 4px 0 currentColor,
-        12px 4px 0 currentColor,
-        16px 4px 0 currentColor,
-        20px 4px 0 currentColor,
-        24px 4px 0 currentColor,
-        0 8px 0 currentColor,
-        24px 8px 0 currentColor,
-        0 12px 0 currentColor,
-        4px 12px 0 currentColor,
-        8px 12px 0 currentColor,
-        12px 12px 0 currentColor,
-        16px 12px 0 currentColor,
-        20px 12px 0 currentColor,
-        24px 12px 0 currentColor,
-        0 16px 0 currentColor,
-        24px 16px 0 currentColor,
-        4px 20px 0 currentColor,
-        8px 20px 0 currentColor,
-        12px 20px 0 currentColor,
-        16px 20px 0 currentColor,
-        20px 20px 0 currentColor;
-    }
-
-    #terminal-login {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      z-index: 9999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: opacity 0.5s ease;
-    }
-
-    #terminal-login.hidden { opacity: 0; pointer-events: none; }
-
-    .terminal {
-      width: 90%;
-      max-width: 900px;
-      height: 80vh;
-      background: #111;
-      border: 4px solid var(--accent);
-      overflow: hidden;
-      box-shadow: 0 0 30px var(--accent), 15px 15px 0 rgba(0,240,255,0.3);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .terminal-header {
-      background: var(--accent-2);
-      padding: 12px 20px;
-      color: #fff;
-      font-weight: 900;
-      border-bottom: 4px solid #000;
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    .terminal-body {
-      flex: 1;
-      padding: 24px;
-      overflow-y: auto;
-      font-size: 1rem;
-      line-height: 1.8;
-      white-space: pre-wrap;
-      background: #0a0a0a;
-      color: #00ff41;
-      font-family: 'Space Mono', monospace;
-    }
-
-    .prompt { color: var(--accent); font-weight: bold; }
-    .cursor { 
-      display: inline-block; 
-      width: 12px; 
-      height: 1.2em; 
-      background: var(--accent-2); 
-      vertical-align: middle; 
-      animation: blink 0.5s step-end infinite;
-      box-shadow: 0 0 10px var(--accent-2);
-    }
-    @keyframes blink { 50% { opacity: 0; } }
-    .success { color: #00ff41; font-weight: 900; text-shadow: 0 0 10px #00ff41; }
-    .error { color: #ff006e; font-weight: 900; text-shadow: 0 0 10px #ff006e; }
-
-    .container {
-      position: relative;
-      background: var(--card-bg);
-      border: 4px solid #000;
-      z-index: 1;
-      max-width: 1200px;
+    .app-shell {
+      max-width: 1040px;
       margin: 0 auto;
-      padding: 0;
-      opacity: 1;
-      transition: opacity 0.5s ease;
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0 44%, var(--orange) 44% 72%, var(--accent) 72% 100%);
+      border: var(--border);
+      border-radius: var(--radius);
       box-shadow: var(--shadow);
-    }
-    .container.visible { opacity: 1; }
-
-    .header { 
-      text-align: center; 
-      margin: 0;
-      padding: 40px 20px;
-      background: var(--accent-3);
-      border-bottom: 4px solid #000;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .header::before {
-      content: '◢◤◢◤◢◤';
-      position: absolute;
-      top: 10px;
-      left: 20px;
-      font-size: 1.2rem;
-      color: #000;
-      opacity: 0.3;
-      letter-spacing: 10px;
-    }
-
-    .header::after {
-      content: '◥◣◥◣◥◣';
-      position: absolute;
-      bottom: 10px;
-      right: 20px;
-      font-size: 1.2rem;
-      color: #000;
-      opacity: 0.3;
-      letter-spacing: 10px;
-    }
-
-    .logo { 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      gap: 16px; 
-      margin-bottom: 12px;
-      position: relative;
-      z-index: 1;
-    }
-    .logo-icon { 
-      color: #000; 
-      font-size: 48px;
-      background: var(--accent-2);
-      width: 80px;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 4px solid #000;
-      box-shadow: 6px 6px 0 #000;
-      transform: rotate(-5deg);
-    }
-    h1 { 
-      font-size: 2.5rem; 
-      letter-spacing: -2px; 
-      text-transform: uppercase; 
-      color: #000;
-      font-weight: 900;
-      text-shadow: 4px 4px 0 rgba(0,0,0,0.2);
-      line-height: 1;
-    }
-    .subtitle { 
-      color: #000; 
-      font-size: 1rem; 
-      font-weight: 700;
-      background: #fff;
-      display: inline-block;
-      padding: 8px 16px;
-      border: 3px solid #000;
-      transform: rotate(-2deg);
-      margin-top: 10px;
-    }
-
-    .main-card {
-      background: #fff;
-      border: none;
-      padding: 0;
-    }
-
-    .card-header {
-      background: var(--accent-4);
-      color: #fff;
-      padding: 16px 24px;
-      margin: 0;
-      border-bottom: 4px solid #000;
-      font-weight: 900;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .tabs { 
-      display: flex; 
-      border-bottom: 4px solid #000; 
-      gap: 0;
-      background: #f0f0f0;
-    }
-    .tab-button {
-      padding: 16px 32px;
-      background: #e0e0e0;
-      border: none;
-      border-right: 4px solid #000;
-      color: #000;
-      cursor: pointer;
-      font-weight: 900;
-      transition: all 0.1s;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.95rem;
-      position: relative;
-      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 0 100%);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .tab-button:last-child {
-      border-right: none;
-      clip-path: polygon(0 0, 100% 0, 100% 100%, 10px 100%);
-    }
-    .tab-button:hover { 
-      background: var(--accent); 
-      transform: translate(-2px, -2px);
-    }
-    .tab-button.active { 
-      background: var(--accent-2); 
-      color: #fff;
-      box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2);
-    }
-
-    .tab-panel { 
-      display: none; 
       padding: 24px;
-      background: repeating-linear-gradient(
-        90deg,
-        #fafafa,
-        #fafafa 20px,
-        #f5f5f5 20px,
-        #f5f5f5 40px
-      );
+      display: grid;
+      gap: 10px;
     }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.6rem, 4vw, 2.5rem);
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      max-width: 75ch;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .badge {
+      border: var(--border);
+      border-radius: 999px;
+      background: #fff;
+      padding: 8px 14px;
+      font-size: .85rem;
+      font-weight: 700;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .badge:nth-child(1) { background: var(--sky); }
+    .badge:nth-child(2) { background: var(--lime); }
+    .badge:nth-child(3) { background: #ffd4e8; }
+
+    .panel {
+      border: var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      background: var(--paper);
+    }
+
+    .panel-head {
+      background:
+        repeating-linear-gradient(-45deg, rgba(16,16,16,.07) 0 8px, transparent 8px 16px),
+        linear-gradient(90deg, var(--secondary), #98f0ff 40%, var(--purple));
+      border-bottom: var(--border);
+      padding: 14px 18px;
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .panel-body {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .tabs { display: flex; gap: 10px; }
+
+    .tab-button {
+      flex: 1;
+      border: var(--border);
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: var(--shadow-sm);
+      padding: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: transform .15s ease;
+    }
+
+    .tab-button:first-child { background: #fff4b8; }
+    .tab-button:last-child { background: #ffd7e8; }
+    .tab-button.active {
+      background: linear-gradient(140deg, var(--mint), var(--sky));
+    }
+    .tab-button:hover { transform: translate(-2px, -2px); }
+
+    .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    .form-group { margin-bottom: 24px; }
-    .form-label { 
-      color: #000; 
-      font-weight: 900; 
-      margin-bottom: 8px; 
-      display: block;
-      font-size: 1rem;
+    .form-label {
+      font-size: .92rem;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      display: block;
+      margin-bottom: 8px;
     }
-    .form-label::before {
-      content: '>';
-      color: var(--accent-2);
-      font-weight: bold;
+
+    .form-help {
+      margin: 0 0 8px;
+      font-size: .84rem;
+      font-weight: 500;
+      opacity: .85;
     }
+
     .form-control {
-      font-weight: 700;
       width: 100%;
-      padding: 16px;
+      border: var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-sm);
+      padding: 12px 14px;
       background: #fff;
-      border: 4px solid #000;
-      color: #000;
-      font-family: 'Space Mono', monospace;
-      font-size: 1rem;
-      transition: all 0.2s;
+      font: inherit;
+      font-weight: 600;
     }
+
     .form-control:focus {
       outline: none;
-      background: #fffff0;
-      box-shadow: 8px 8px 0 rgba(0,0,0,0.1);
-      transform: translate(-2px, -2px);
+      background: #fffef2;
+      box-shadow: 6px 6px 0 #101010;
     }
-    textarea.form-control { 
-      min-height: 180px; 
+
+    textarea.form-control {
+      min-height: 160px;
       resize: vertical;
-      line-height: 1.6;
+      line-height: 1.4;
     }
 
-    .options-group { 
-      display: grid; 
-      grid-template-columns: 1fr 1fr; 
-      gap: 24px; 
-      margin-bottom: 24px;
-      padding: 24px;
-      background: var(--accent);
-      border: 4px solid #000;
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
     }
-    @media (max-width: 640px) { .options-group { grid-template-columns: 1fr; } }
 
-    .checkbox-group { 
-      display: flex; 
-      align-items: center; 
-      gap: 12px; 
-      color: #000; 
-      margin: 24px;
-      padding: 16px;
-      background: #fff;
-      border: 4px solid #000;
-      font-weight: 900;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.2s;
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-sm);
+      padding: 12px;
+      background: #fff5cb;
+      font-weight: 700;
     }
-    .checkbox-group:hover {
-      background: var(--accent-3);
-      transform: translate(-2px, -2px);
-      box-shadow: 4px 4px 0 #000;
-    }
-    .checkbox-group input { 
-      accent-color: var(--accent-2); 
-      width: 24px; 
-      height: 24px;
-      cursor: pointer;
-    }
+
+    .checkbox-group input { width: 18px; height: 18px; }
 
     .output-container {
-      background: #000;
-      border: 4px solid #000;
-      padding: 0;
-      margin: 24px;
       display: none;
-      box-shadow: var(--shadow);
+      border: var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      background: #fff;
     }
+
     .output-container.visible { display: block; }
 
     .output-header {
-      background: var(--accent-2);
+      background: linear-gradient(120deg, var(--accent), var(--purple));
       color: #fff;
-      padding: 12px 16px;
-      font-weight: 900;
+      border-bottom: var(--border);
+      padding: 10px 14px;
+      font-size: .85rem;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      border-bottom: 4px solid #000;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      letter-spacing: .7px;
     }
 
     .output-content {
-      background: #0a0a0a;
-      border: none;
-      padding: 20px;
-      font-size: 0.95rem;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      word-break: break-all;
-      max-height: 250px;
-      overflow-y: auto;
-      color: #00ff41;
-      font-family: 'Space Mono', monospace;
+      padding: 14px;
+      max-height: 200px;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .92rem;
+      word-break: break-word;
+      line-height: 1.45;
     }
 
-    .buttons-group { 
-      display: flex; 
-      gap: 16px; 
-      margin: 24px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      padding: 16px 32px;
-      background: #fff;
-      border: 4px solid #000;
-      color: #000;
-      font-weight: 900;
-      cursor: pointer;
-      transition: all 0.1s;
-      flex: 1;
-      min-width: 160px;
-      font-family: 'Space Mono', monospace;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-size: 0.95rem;
-      position: relative;
-      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% calc(100% - 12px), 100% 100%, 12px 100%, 0 12px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 4px;
-      left: 4px;
-      right: 4px;
-      bottom: 4px;
-      border: 2px solid rgba(0,0,0,0.1);
-      pointer-events: none;
-    }
-    .btn:hover { 
-      transform: translate(-4px, -4px);
-      box-shadow: 8px 8px 0 #000;
-    }
-    .btn:active { 
-      transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0 #000;
-    }
-
-    .btn-primary    { background: var(--accent); }
-    .btn-success    { background: var(--accent-3); }
-    .btn-warning    { background: var(--bg-alt); }
-    .btn-secondary  { background: #e0e0e0; }
-
-    .stats { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
-      gap: 0;
-      margin: 0;
-      border-top: 4px solid #000;
-      border-bottom: 4px solid #000;
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
     }
 
     .stat-box {
+      border: var(--border);
+      border-radius: 12px;
+      padding: 10px;
       background: #fff;
-      border-right: 4px solid #000;
-      padding: 24px 16px;
+      box-shadow: var(--shadow-sm);
       text-align: center;
-      position: relative;
-      overflow: hidden;
     }
-    .stat-box:last-child {
-      border-right: none;
-    }
-    .stat-box::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 6px;
-      background: var(--accent-2);
-    }
-    .stat-box:nth-child(2)::before { background: var(--accent); }
-    .stat-box:nth-child(3)::before { background: var(--accent-3); }
-    .stat-box:nth-child(4)::before { background: var(--accent-4); }
 
-    .stat-value { 
-      font-size: 2.5rem; 
-      font-weight: 900; 
-      color: #000;
-      line-height: 1;
-      margin-bottom: 8px;
+    .stat-box:nth-child(1) { background: #ffe38d; }
+    .stat-box:nth-child(2) { background: #b6ffda; }
+    .stat-box:nth-child(3) { background: #bceeff; }
+    .stat-box:nth-child(4) { background: #ffd1e3; }
+
+    .stat-value { font-size: 1.4rem; font-weight: 800; }
+    .stat-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; }
+
+    .buttons-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    .stat-label { 
-      color: #000; 
-      font-size: 0.8rem;
-      font-weight: 900;
+
+    .btn {
+      border: var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      padding: 11px 14px;
+      background: #fff;
+      font: inherit;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      cursor: pointer;
+      transition: transform .15s ease;
     }
 
-    .footer {
+    .btn:hover { transform: translate(-2px, -2px); }
+    .btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #101010; }
+    .btn-primary { background: linear-gradient(120deg, var(--primary), var(--orange)); }
+    .btn-secondary { background: linear-gradient(120deg, #f2f2f2, #d7d7d7); }
+    .btn-success { background: linear-gradient(120deg, var(--mint), var(--sky)); }
+
+    .footer-note {
       text-align: center;
-      background: #000;
-      padding: 32px 24px;
-      color: #fff;
-      font-size: 0.9rem;
+      font-size: .84rem;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      border-top: 4px solid var(--accent);
+      opacity: .8;
+      background: #fff;
+      border: var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      padding: 10px 12px;
     }
 
-    .author-link { 
-      color: var(--accent); 
-      text-decoration: none;
-      border-bottom: 2px solid var(--accent);
-      transition: all 0.2s;
+    @media (max-width: 780px) {
+      body { padding: 16px; }
+      .options-grid, .stats { grid-template-columns: 1fr; }
+      .tabs { flex-direction: column; }
+      .hero { padding: 18px; }
     }
-    .author-link:hover { 
-      color: var(--accent-2);
-      border-bottom-color: var(--accent-2);
-      background: rgba(255,0,110,0.1);
-      padding: 0 4px;
-    }
-
-    /* Scrollbar styling */
-    ::-webkit-scrollbar {
-      width: 12px;
-      height: 12px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f0f0f0;
-      border-left: 4px solid #000;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #000;
-      border: 2px solid #f0f0f0;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--accent-2);
-    }
-
-    /* Glitch effect for header */
-    @keyframes glitch {
-      0% { transform: translate(0) }
-      20% { transform: translate(-2px, 2px) }
-      40% { transform: translate(-2px, -2px) }
-      60% { transform: translate(2px, 2px) }
-      80% { transform: translate(2px, -2px) }
-      100% { transform: translate(0) }
-    }
-    .glitch:hover {
-      animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
-    }
-
-    /* Selection color */
-    ::selection {
-      background: var(--accent-2);
-      color: #fff;
-    }
-
-    /* Pixel art decoration */
-    .pixel-decoration {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: #000;
-      box-shadow: 
-        20px 0 0 var(--accent-2),
-        40px 0 0 #000,
-        0 20px 0 var(--accent-3),
-        20px 20px 0 #000,
-        40px 20px 0 var(--accent);
-    }
-
-    /* Corner brackets */
-    .corner-bracket {
-      position: absolute;
-      width: 30px;
-      height: 30px;
-      border: 4px solid #000;
-    }
-    .corner-bracket.tl { top: -4px; left: -4px; border-right: none; border-bottom: none; }
-    .corner-bracket.tr { top: -4px; right: -4px; border-left: none; border-bottom: none; }
-    .corner-bracket.bl { bottom: -4px; left: -4px; border-right: none; border-top: none; }
-    .corner-bracket.br { bottom: -4px; right: -4px; border-left: none; border-top: none; }
   </style>
 </head>
 <body>
+  <div id="terminal-login"></div>
 
-  <!-- Terminal Login sebagai Preload (CMD style) -->
-  <div id="terminal-login">
-    <div class="terminal">
-      <div class="terminal-header">
-        <div>H3STORE SECURE TERMINAL v1.0</div>
-        <div>HOST: localhost</div>
+  <main class="app-shell container" id="main-content">
+    <section class="hero">
+      <h1>Excel to Line Converter</h1>
+      <p>Gaya baru NeoBrutalism: lebih kontras, playful, dan fokus ke alur cepat. Tinggal paste data, pilih delimiter, selesai.</p>
+      <div class="badge-row">
+        <span class="badge">Auto-process saat paste</span>
+        <span class="badge">Support data kotor</span>
+        <span class="badge">Hapus duplikat</span>
       </div>
-      <div class="terminal-body" id="terminalOutput"></div>
-    </div>
-  </div>
+    </section>
 
-  <!-- Audio efek ketik -->
-  <audio id="typeSound" preload="auto">
-    <source src="https://assets.codepen.io/243235/keyboard-single-key-press-1.mp3" type="audio/mpeg">
-  </audio>
-
-  <!-- Warning Tape Top -->
-  <div class="warning-tape danger"></div>
-
-  <div class="container" id="main-content">
-    <!-- Corner Brackets -->
-    <div class="corner-bracket tl"></div>
-    <div class="corner-bracket tr"></div>
-
-    <div class="header">
-      <div class="logo glitch">
-        <div class="logo-icon">
-          <span class="pixel-icon terminal" style="color: #000; transform: scale(1.5);"></span>
+    <section class="panel">
+      <div class="panel-head">Konversi Data</div>
+      <div class="panel-body">
+        <div class="tabs">
+          <button class="tab-button active" data-tab="normal">Konversi Data</button>
+          <button class="tab-button" data-tab="dirty">Data Belum Bersih</button>
         </div>
-        <h1>EXCEL_LINE_<br>CONVERT</h1>
-      </div>
-      <p class="subtitle">DATA EXTRACTION & CONCATENATION UTILITY — ROOT ACCESS</p>
-    </div>
 
-    <!-- Warning Tape Middle -->
-    <div class="warning-tape"></div>
-
-    <div class="main-card">
-      <div class="card-header">
-        <span class="pixel-icon database" style="color: #fff; margin-right: 8px;"></span>
-        [ TERMINAL v1.0 — SECURE SESSION ]
-      </div>
-
-      <div class="tabs">
-        <button class="tab-button active" data-tab="normal">
-          <span class="pixel-icon file" style="color: currentColor;"></span>
-          NORMAL_DATA
-        </button>
-        <button class="tab-button" data-tab="dirty">
-          <span class="pixel-icon trash" style="color: currentColor;"></span>
-          DIRTY_CLEANSE
-        </button>
-      </div>
-
-      <div class="form-group tab-panel active" data-tab-panel="normal">
-        <label class="form-label" for="input">PASTE EXCEL COLUMN:</label>
-        <textarea id="input" class="form-control" placeholder="Ctrl+V → auto process
-Contoh:
+        <div class="form-group tab-panel active" data-tab-panel="normal">
+          <label class="form-label" for="input">Paste data dari Excel</label>
+          <p class="form-help">Tempel satu kolom data. Sistem akan proses otomatis dan salin ke clipboard.</p>
+          <textarea id="input" class="form-control" placeholder="Contoh:
 IO00895128
-IO00885689
-IO00875123"></textarea>
-      </div>
+IO00885689"></textarea>
+        </div>
 
-      <div class="form-group tab-panel" data-tab-panel="dirty">
-        <label class="form-label" for="dirtyInput">PASTE CONTAMINATED DATA:</label>
-        <textarea id="dirtyInput" class="form-control" placeholder="Contoh:
+        <div class="form-group tab-panel" data-tab-panel="dirty">
+          <label class="form-label" for="dirtyInput">Paste data mentah / kotor</label>
+          <p class="form-help">Cocok untuk data dengan ';', '(Released)', tab, dan spasi berlebih.</p>
+          <textarea id="dirtyInput" class="form-control" placeholder="Contoh:
 ;IR00974264 (Released)
-IR00981234 (Released)"></textarea>
-      </div>
-
-      <div class="options-group">
-        <div>
-          <label class="form-label" for="delimiter">DELIMITER:</label>
-          <select id="delimiter" class="form-control">
-            <option value=";">;</option>
-            <option value=",">,</option>
-            <option value="|">|</option>
-            <option value=" ">SPACE</option>
-            <option value="\n">NEWLINE</option>
-            <option value="">NULL</option>
-          </select>
+;IR00974265 (Released)"></textarea>
         </div>
-        <div>
-          <label class="form-label" for="customDelimiter">CUSTOM DELIMITER:</label>
-          <input type="text" id="customDelimiter" class="form-control" placeholder="→ | :: -">
+
+        <div class="options-grid">
+          <div>
+            <label class="form-label" for="delimiter">Pilih Delimiter</label>
+            <select id="delimiter" class="form-control">
+              <option value=";">Titik koma ;</option>
+              <option value=",">Koma ,</option>
+              <option value="|">Pipe |</option>
+              <option value=" ">Spasi</option>
+              <option value="\n">Baris baru</option>
+              <option value="">Tanpa delimiter</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label" for="customDelimiter">Delimiter Kustom</label>
+            <input type="text" id="customDelimiter" class="form-control" placeholder="Contoh: :: atau  / ">
+          </div>
+        </div>
+
+        <label class="checkbox-group">
+          <input type="checkbox" id="removeDuplicates" checked>
+          Hapus data duplikat dari hasil
+        </label>
+
+        <div id="output" class="output-container">
+          <div class="output-header">Hasil Konversi</div>
+          <div id="outputContent" class="output-content"></div>
+          <div class="buttons-group" style="padding: 12px 14px; border-top: var(--border);">
+            <button class="btn btn-success" onclick="copyManually()">Salin Ulang</button>
+            <button class="btn btn-secondary" onclick="clearOutputOnly()">Sembunyikan Hasil</button>
+          </div>
+        </div>
+
+        <div class="stats" id="stats">
+          <div class="stat-box"><div class="stat-value" id="lineCount">0</div><div class="stat-label">Line diproses</div></div>
+          <div class="stat-box"><div class="stat-value" id="uniqueCount">0</div><div class="stat-label">Line unik</div></div>
+          <div class="stat-box"><div class="stat-value" id="resultLength">0</div><div class="stat-label">Panjang output</div></div>
+          <div class="stat-box"><div class="stat-value" id="delimiterUsed">-</div><div class="stat-label">Delimiter aktif</div></div>
+        </div>
+
+        <div class="buttons-group">
+          <button class="btn btn-primary" onclick="processData()">Proses Manual</button>
+          <button class="btn btn-secondary" onclick="resetAll()">Reset Semua</button>
         </div>
       </div>
+    </section>
 
-      <div class="checkbox-group">
-        <input type="checkbox" id="removeDuplicates" checked>
-        <label for="removeDuplicates">PURGE DUPLICATES</label>
-      </div>
-
-      <div id="output" class="output-container">
-        <div class="output-header">
-          <span class="pixel-icon database" style="color: #fff;"></span>
-          OUTPUT BUFFER — AUTO-COPIED
-        </div>
-        <div id="outputContent" class="output-content"></div>
-        <div class="buttons-group" style="margin: 0; border-top: 4px solid #000; padding: 16px; background: #fff;">
-          <button class="btn btn-success" onclick="copyManually()">
-            <span class="pixel-icon copy" style="color: currentColor;"></span>
-            DUMP AGAIN
-          </button>
-          <button class="btn btn-secondary" onclick="clearOutputOnly()">
-            <span class="pixel-icon eye" style="color: currentColor;"></span>
-            CLEAR
-          </button>
-        </div>
-      </div>
-
-      <div class="stats" id="stats">
-        <div class="stat-box"><div class="stat-value" id="lineCount">0</div><div class="stat-label">LINES PROCESSED</div></div>
-        <div class="stat-box"><div class="stat-value" id="uniqueCount">0</div><div class="stat-label">UNIQUE ENTRIES</div></div>
-        <div class="stat-box"><div class="stat-value" id="resultLength">0</div><div class="stat-label">CHARS OUTPUT</div></div>
-        <div class="stat-box"><div class="stat-value" id="delimiterUsed">-</div><div class="stat-label">DELIMITER</div></div>
-      </div>
-
-      <div class="buttons-group" style="background: #f0f0f0; margin: 0; padding: 24px; border-top: 4px solid #000;">
-        <button class="btn btn-primary" onclick="processData()">
-          <span class="pixel-icon bolt" style="color: currentColor;"></span>
-          EXECUTE
-        </button>
-        <button class="btn btn-secondary" onclick="resetAll()">
-          <span class="pixel-icon redo" style="color: currentColor;"></span>
-          REBOOT
-        </button>
-      </div>
-    </div>
-
-    <!-- Warning Tape Bottom -->
-    <div class="warning-tape reverse"></div>
-
-    <div class="footer">
-      TERMINAL SESSION ACTIVE • H3STORE ENTERPRISE • 2026<br>
-      <a href="https://andri-land.biz.id/" class="author-link" target="_blank">>> ACCESS ORIGIN</a>
-    </div>
-
-    <!-- Corner Brackets Bottom -->
-    <div class="corner-bracket bl"></div>
-    <div class="corner-bracket br"></div>
-  </div>
+    <p class="footer-note">Tip: jika clipboard tidak berjalan, buka lewat localhost (contoh: python -m http.server 8000).</p>
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    // Audio efek ketik
-    const typeSound = document.getElementById('typeSound');
-
-    function playTypeSound() {
-      typeSound.currentTime = 0;
-      typeSound.volume = 0.25;
-      typeSound.play().catch(() => {});
-    }
-
     const terminalOutput = document.getElementById('terminalOutput');
     const terminalLogin = document.getElementById('terminal-login');
     const mainContent = document.getElementById('main-content');
 
-    function addLine(text = '', className = '') {
-      const line = document.createElement('div');
-      line.textContent = text;
-      if (className) line.className = className;
-      terminalOutput.appendChild(line);
-      terminalOutput.scrollTop = terminalOutput.scrollHeight;
-    }
-
-    function typeText(text, callback, speed = 20) {
-      let i = 0;
-      const interval = setInterval(() => {
-        if (i < text.length) {
-          terminalOutput.innerHTML += text.charAt(i);
-          playTypeSound();
-          i++;
-          terminalOutput.scrollTop = terminalOutput.scrollHeight;
-        } else {
-          clearInterval(interval);
-          terminalOutput.innerHTML += '<br>';
-          if (callback) callback();
-        }
-      }, speed);
-    }
-
-    // Sequence terminal login (dipercepat)
-    function startLoginSequence() {
-      addLine("Microsoft Windows [Version 10.0.19045.4529]");
-      addLine("(c) Microsoft Corporation. All rights reserved.");
-      addLine("");
-      addLine("C:\\Users\\Administrator>");
-
-      setTimeout(() => {
-        typeText("net user convert /add", () => {
-          setTimeout(() => {
-            addLine("The command completed successfully.");
-            addLine("");
-            typeText("net localgroup administrators convert /add", () => {
-              setTimeout(() => {
-                addLine("The command completed successfully.");
-                addLine("");
-                addLine("C:\\Users\\Administrator>");
-
-                setTimeout(() => {
-                  typeText("login as: ", () => {
-                    setTimeout(() => {
-                      terminalOutput.innerHTML += "convert<br>";
-                      playTypeSound();
-                      typeText("password: ", () => {
-                        setTimeout(() => {
-                          terminalOutput.innerHTML += "********<br>";
-                          playTypeSound();
-                          addLine("");
-                          addLine("Verifying credentials...", "prompt");
-
-                          setTimeout(() => {
-                            addLine("Access granted.", "success");
-                            addLine("Initializing secure session...", "success");
-
-                            setTimeout(() => {
-                              terminalLogin.classList.add('hidden');
-                              setTimeout(() => {
-                                mainContent.classList.add('visible');
-                              }, 500);
-                            }, 1000);
-                          }, 800);
-                        }, 600);
-                      }, 25);
-                    }, 700);
-                  }, 25);
-                }, 600);
-              }, 700);
-            }, 25);
-          }, 600);
-        }, 25);
-      }, 800);
-    }
-
     const enablePreloader = false;
-
-    if (enablePreloader) {
-      window.addEventListener('load', () => {
-        setTimeout(startLoginSequence, 500);
-      });
-    } else {
+    if (!enablePreloader) {
       terminalLogin.classList.add('hidden');
       terminalLogin.style.display = 'none';
       mainContent.classList.add('visible');
     }
 
-    // ────────────────────────────────
-    // LOGIKA APLIKASI EXCEL TO LINE CONVERT
-    // ────────────────────────────────
     const inputEl = document.getElementById("input");
     const dirtyInputEl = document.getElementById("dirtyInput");
     const delimiterEl = document.getElementById("delimiter");
@@ -1220,30 +492,22 @@ IR00981234 (Released)"></textarea>
         await navigator.clipboard.writeText(result);
         sourceEl.value = "";
         Swal.fire({
-          background: '#000',
-          color: '#00ff41',
+          background: '#fff',
+          color: '#101010',
           icon: 'success',
-          iconColor: '#00ff41',
-          title: 'BUFFER COPIED',
-          text: `Processed ${original} lines${original !== unique ? ` | Purged ${original-unique} duplicates` : ''}`,
-          timer: 2200,
-          showConfirmButton: false,
-          customClass: {
-            popup: 'border-4 border-black font-mono'
-          }
+          title: 'Berhasil disalin',
+          text: `Processed ${original} lines${original !== unique ? ` | Purged ${original - unique} duplicates` : ''}`,
+          timer: 1800,
+          showConfirmButton: false
         });
       } catch (e) {
         Swal.fire({
-          background: '#000',
-          color: '#ff006e',
+          background: '#fff',
+          color: '#101010',
           icon: 'warning',
-          iconColor: '#ff006e',
-          title: 'CLIPBOARD ERROR',
-          text: 'Use DUMP AGAIN',
-          timer: 1800,
-          customClass: {
-            popup: 'border-4 border-black font-mono'
-          }
+          title: 'Clipboard gagal',
+          text: 'Silakan copy manual dari hasil.',
+          timer: 2000
         });
       }
       isProcessing = false;
@@ -1260,18 +524,14 @@ IR00981234 (Released)"></textarea>
       try {
         await navigator.clipboard.writeText(txt);
         Swal.fire({
-          background: '#000',
-          color: '#00ff41',
+          background: '#fff',
+          color: '#101010',
           toast: true,
           position: 'top-end',
           icon: 'success',
-          iconColor: '#00ff41',
-          title: 'DUMPED',
-          timer: 1000,
-          showConfirmButton: false,
-          customClass: {
-            popup: 'border-4 border-black font-mono'
-          }
+          title: 'Hasil disalin',
+          timer: 1200,
+          showConfirmButton: false
         });
       } catch {}
     }
