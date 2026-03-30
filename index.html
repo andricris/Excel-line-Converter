@@ -9,49 +9,41 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
-    /* --- NEO BRUTALISM CORE VARIABLES --- */
+    /* --- EXCEL-LIKE THEME VARIABLES --- */
     :root {
-      --bg-color: #f0f0f0;
-      --bg-grid: #d1d1d1;
-      
-      /* Palette */
-      --c-black: #000000;
-      --c-white: #ffffff;
-      --c-yellow: #fff503; /* Highlight */
-      --c-pink: #ff90e8;   /* Secondary */
-      --c-blue: #23a6d5;   /* Primary Action */
-      --c-green: #b0fb5d;  /* Success */
-      --c-purple: #a06cd5; /* Accent */
-      --c-red: #ff6b6b;    /* Error/Warning */
-
-      /* Borders & Shadows */
-      --border-thick: 3px solid var(--c-black);
-      --border-thin: 2px solid var(--c-black);
-      --shadow-hard: 6px 6px 0px var(--c-black);
-      --shadow-hover: 3px 3px 0px var(--c-black);
-      --shadow-active: 0px 0px 0px var(--c-black);
+      --excel-green: #217346;
+      --excel-green-dark: #185a36;
+      --excel-ribbon: #f3f5f7;
+      --excel-sheet: #ffffff;
+      --excel-line: #d8dee6;
+      --excel-line-strong: #b8c2cf;
+      --excel-text: #202428;
+      --excel-soft: #eef2f6;
+      --excel-accent: #e6f2eb;
+      --excel-warn: #fff4df;
+      --border-thick: 1px solid var(--excel-line-strong);
+      --border-thin: 1px solid var(--excel-line);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
 
     body {
-      background-color: var(--bg-color);
-      /* Grid Pattern Background */
-      background-image: linear-gradient(var(--bg-grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
-      background-size: 20px 20px;
-      color: var(--c-black);
-      font-family: 'Courier New', Courier, monospace;
+      background-color: #f7f9fb;
+      background-image: linear-gradient(var(--excel-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--excel-line) 1px, transparent 1px);
+      background-size: 28px 28px;
+      color: var(--excel-text);
+      font-family: Calibri, "Segoe UI", Tahoma, sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
-      padding: 20px;
+      padding: 12px;
     }
 
     /* --- TERMINAL LOGIN OVERLAY --- */
     #terminal-login {
       position: fixed;
       inset: 0;
-      background: var(--c-black);
+      background: #0f1419;
       z-index: 9999;
       display: flex;
       justify-content: center;
@@ -66,14 +58,14 @@
       height: 80vh;
       background: #111;
       border: var(--border-thick);
-      box-shadow: var(--shadow-hard);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
       display: flex;
       flex-direction: column;
       font-family: 'Consolas', monospace;
     }
 
     .terminal-header {
-      background: var(--c-green);
+      background: var(--excel-green);
       border-bottom: var(--border-thick);
       padding: 5px 15px;
       font-weight: bold;
@@ -85,7 +77,7 @@
     .terminal-body {
       flex: 1;
       padding: 20px;
-      color: var(--c-green);
+      color: #9be7ba;
       overflow-y: auto;
       font-size: 1rem;
       text-shadow: 0 0 2px rgba(176, 251, 93, 0.4);
@@ -93,8 +85,8 @@
 
     /* --- MAIN CONTAINER --- */
     .container {
-      max-width: 900px;
-      margin: 40px auto;
+      max-width: 1150px;
+      margin: 18px auto;
       opacity: 0;
       transition: opacity 0.5s;
     }
@@ -102,84 +94,93 @@
 
     /* --- HEADER SECTION --- */
     .app-header {
-      text-align: center;
-      margin-bottom: 40px;
+      text-align: left;
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      border: var(--border-thick);
+      background: linear-gradient(180deg, #2a8551, var(--excel-green));
+      color: #fff;
     }
 
     .brand-box {
-      display: inline-block;
-      background: var(--c-yellow);
-      border: var(--border-thick);
-      padding: 15px 30px;
-      box-shadow: var(--shadow-hard);
-      transform: rotate(-2deg);
+      display: inline-flex;
+      align-items: center;
+      background: transparent;
+      border: none;
+      padding: 0;
     }
 
     .brand-title {
-      font-family: 'Arial Black', sans-serif;
-      font-size: 2.5rem;
-      text-transform: uppercase;
+      font-family: Calibri, "Segoe UI", sans-serif;
+      font-size: 1.5rem;
+      text-transform: none;
       line-height: 1;
+      letter-spacing: 0.2px;
     }
 
     .tagline {
       display: inline-block;
-      background: var(--c-black);
-      color: var(--c-white);
-      padding: 5px 10px;
-      margin-top: 15px;
-      font-weight: bold;
-      transform: rotate(1deg);
-      font-size: 0.9rem;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 4px 8px;
+      margin-top: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      font-weight: 600;
+      font-size: 0.8rem;
     }
 
     /* --- MAIN CARD --- */
     .main-card {
-      background: var(--c-white);
+      background: var(--excel-sheet);
       border: var(--border-thick);
-      box-shadow: var(--shadow-hard);
-      padding: 30px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      padding: 16px;
       position: relative;
     }
 
     .card-label {
       position: absolute;
-      top: -15px;
-      left: 20px;
-      background: var(--c-pink);
-      border: var(--border-thick);
-      padding: 5px 15px;
-      font-weight: 900;
-      text-transform: uppercase;
-      box-shadow: 3px 3px 0 var(--c-black);
+      top: 8px;
+      right: 12px;
+      left: auto;
+      background: var(--excel-soft);
+      border: var(--border-thin);
+      padding: 3px 8px;
+      font-weight: 600;
+      text-transform: none;
+      font-size: 0.75rem;
+      color: #4a5562;
+      box-shadow: none;
     }
 
     /* --- TABS --- */
     .tabs {
       display: flex;
       gap: 10px;
-      margin-bottom: 25px;
-      border-bottom: var(--border-thick);
-      padding-bottom: 15px;
+      margin: 8px 0 16px;
+      border-bottom: var(--border-thin);
+      padding-bottom: 8px;
     }
 
     .tab-btn {
-      padding: 10px 20px;
-      background: #eee;
+      padding: 8px 14px;
+      background: var(--excel-soft);
       border: var(--border-thin);
-      font-weight: bold;
+      font-weight: 600;
       cursor: pointer;
-      box-shadow: 4px 4px 0 var(--c-black);
+      box-shadow: none;
       transition: all 0.1s;
-      text-transform: uppercase;
+      text-transform: none;
+      border-radius: 4px 4px 0 0;
     }
 
-    .tab-btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--c-black); }
+    .tab-btn:hover { background: #e3eaf1; }
     .tab-btn.active {
-      background: var(--c-blue);
-      color: white;
-      transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0 var(--c-black);
+      background: #fff;
+      color: var(--excel-green-dark);
+      border-bottom-color: #fff;
+      transform: none;
+      box-shadow: inset 0 -2px 0 var(--excel-green);
     }
 
     .tab-panel { display: none; }
@@ -191,30 +192,30 @@
     
     .label-box {
       display: inline-block;
-      background: var(--c-black);
-      color: var(--c-white);
-      padding: 4px 8px;
-      font-weight: bold;
-      font-size: 0.8rem;
+      background: transparent;
+      color: #3b4450;
+      padding: 0;
+      font-weight: 600;
+      font-size: 0.82rem;
       margin-bottom: 8px;
-      transform: skew(-5deg);
     }
 
     textarea, input, select {
       width: 100%;
-      padding: 15px;
+      padding: 10px 12px;
       background: #fff;
-      border: var(--border-thick);
-      font-family: 'Courier New', monospace;
-      font-weight: bold;
-      font-size: 1rem;
-      box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+      border: var(--border-thin);
+      font-family: Calibri, "Segoe UI", sans-serif;
+      font-weight: 500;
+      font-size: 0.95rem;
+      box-shadow: none;
       transition: box-shadow 0.2s;
     }
 
     textarea:focus, input:focus, select:focus {
-      background: #fffbe6;
-      box-shadow: var(--shadow-hard);
+      background: #fff;
+      border-color: var(--excel-green);
+      box-shadow: inset 0 0 0 1px var(--excel-green);
     }
 
     textarea { min-height: 150px; resize: vertical; }
@@ -224,11 +225,11 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
-      background: var(--c-red);
-      padding: 20px;
-      border: var(--border-thick);
+      background: var(--excel-ribbon);
+      padding: 14px;
+      border: var(--border-thin);
       margin-bottom: 20px;
-      box-shadow: 4px 4px 0 var(--c-black);
+      box-shadow: none;
     }
 
     /* --- CHECKBOX CUSTOM --- */
@@ -236,13 +237,13 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      background: var(--c-purple);
-      padding: 15px;
-      border: var(--border-thick);
-      color: white;
-      font-weight: bold;
+      background: var(--excel-accent);
+      padding: 10px 12px;
+      border: var(--border-thin);
+      color: #2d4738;
+      font-weight: 600;
       margin-bottom: 20px;
-      box-shadow: 4px 4px 0 var(--c-black);
+      box-shadow: none;
     }
 
     input[type="checkbox"] {
@@ -250,32 +251,32 @@
       height: 20px;
       appearance: none;
       background: white;
-      border: 2px solid black;
+      border: 1px solid var(--excel-line-strong);
       cursor: pointer;
       margin: 0;
     }
     input[type="checkbox"]:checked {
-      background: var(--c-black);
+      background: var(--excel-green);
     }
 
     /* --- OUTPUT SECTION --- */
     .output-area {
-      background: var(--c-yellow);
-      border: var(--border-thick);
-      padding: 20px;
+      background: var(--excel-warn);
+      border: var(--border-thin);
+      padding: 14px;
       margin: 30px 0;
       display: none;
-      box-shadow: var(--shadow-hard);
+      box-shadow: none;
     }
     .output-area.visible { display: block; }
 
     .output-box {
       background: white;
-      border: var(--border-thick);
-      padding: 15px;
+      border: var(--border-thin);
+      padding: 12px;
       height: 200px;
       overflow-y: auto;
-      font-family: monospace;
+      font-family: Consolas, monospace;
       white-space: pre-wrap;
     }
 
@@ -289,55 +290,57 @@
 
     .stat-card {
       background: white;
-      border: var(--border-thick);
-      padding: 15px;
+      border: var(--border-thin);
+      padding: 12px;
       text-align: center;
-      box-shadow: 4px 4px 0 var(--c-black);
+      box-shadow: none;
     }
 
     .stat-num { font-size: 2rem; font-weight: 900; }
-    .stat-desc { background: black; color: white; font-size: 0.7rem; padding: 2px 5px; text-transform: uppercase; }
+    .stat-desc { background: var(--excel-soft); color: #4a5562; font-size: 0.7rem; padding: 2px 5px; text-transform: uppercase; border: var(--border-thin); }
 
     /* --- BUTTONS --- */
     .btn-group { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
 
     .btn {
       flex: 1;
-      padding: 15px;
-      border: var(--border-thick);
-      font-weight: 900;
-      text-transform: uppercase;
+      padding: 10px 12px;
+      border: var(--border-thin);
+      font-weight: 600;
+      text-transform: none;
       cursor: pointer;
-      box-shadow: var(--shadow-hard);
+      box-shadow: none;
       transition: all 0.1s;
-      font-family: 'Arial Black', sans-serif;
+      font-family: Calibri, "Segoe UI", sans-serif;
       min-width: 150px;
+      border-radius: 4px;
     }
 
-    .btn:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--c-black); }
-    .btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0 var(--c-black); }
+    .btn:hover { filter: brightness(0.97); }
+    .btn:active { filter: brightness(0.94); }
 
-    .btn-primary { background: var(--c-blue); color: white; }
-    .btn-success { background: var(--c-green); color: black; }
-    .btn-warning { background: var(--c-yellow); color: black; }
-    .btn-reset { background: white; color: black; }
+    .btn-primary { background: var(--excel-green); color: white; border-color: var(--excel-green-dark); }
+    .btn-success { background: #4a9f69; color: white; border-color: #3d8457; }
+    .btn-warning { background: #f3f5f7; color: #28313b; }
+    .btn-reset { background: white; color: #28313b; }
 
     /* --- FOOTER --- */
     .footer {
       text-align: center;
-      margin-top: 50px;
-      background: black;
-      color: white;
-      padding: 20px;
-      border: var(--border-thick);
-      box-shadow: var(--shadow-hard);
+      margin-top: 14px;
+      background: #f3f6f9;
+      color: #56606c;
+      padding: 12px;
+      border: var(--border-thin);
+      box-shadow: none;
+      font-size: 0.82rem;
     }
-    .footer a { color: var(--c-yellow); text-decoration: none; font-weight: bold; }
+    .footer a { color: var(--excel-green-dark); text-decoration: none; font-weight: 600; }
 
     /* --- SCROLLBAR --- */
     ::-webkit-scrollbar { width: 10px; }
-    ::-webkit-scrollbar-track { background: #fff; border-left: 2px solid black; }
-    ::-webkit-scrollbar-thumb { background: black; border: 2px solid white; }
+    ::-webkit-scrollbar-track { background: #f5f7fa; border-left: 1px solid var(--excel-line); }
+    ::-webkit-scrollbar-thumb { background: #c6cfda; border: 1px solid #f5f7fa; }
 
     /* --- SWEETALERT OVERRIDES --- */
     .swal2-popup {
@@ -349,7 +352,7 @@
       border: 2px solid black !important;
       border-radius: 0 !important;
       box-shadow: 4px 4px 0 black !important;
-      background-color: var(--c-blue) !important;
+      background-color: var(--excel-green) !important;
       font-weight: bold !important;
     }
   </style>
@@ -380,33 +383,33 @@
         <div class="brand-title">EXCEL<br>CONVERT</div>
       </div>
       <br>
-      <div class="tagline">DATA EXTRACTION & CONCATENATION UTILITY</div>
+      <div class="tagline">Spreadsheet style data extraction & concatenation</div>
     </header>
 
     <div class="main-card">
-      <div class="card-label">/// SYSTEM CONTROL PANEL</div>
+      <div class="card-label">Workbook Panel</div>
 
       <!-- TABS -->
       <div class="tabs">
-        <button class="tab-btn active" data-tab="normal">NORMAL_DATA</button>
-        <button class="tab-btn" data-tab="dirty">DIRTY_CLEANSE</button>
+        <button class="tab-btn active" data-tab="normal">Sheet Data</button>
+        <button class="tab-btn" data-tab="dirty">Clean Dirty Data</button>
       </div>
 
       <!-- INPUT PANELS -->
       <div class="form-group tab-panel active" data-tab-panel="normal">
-        <div class="label-box">>> INPUT_SOURCE (PASTE HERE)</div>
+        <div class="label-box">Input source (paste from Excel)</div>
         <textarea id="input" placeholder="PASTE YOUR EXCEL COLUMN DATA HERE...&#10;IO00895128&#10;IO00885689"></textarea>
       </div>
 
       <div class="form-group tab-panel" data-tab-panel="dirty">
-        <div class="label-box">>> CONTAMINATED_SOURCE</div>
+        <div class="label-box">Dirty source cleanup</div>
         <textarea id="dirtyInput" placeholder="PASTE DIRTY DATA HERE...&#10;;IR00974264 (Released)&#10;IR00981234 (Released)"></textarea>
       </div>
 
       <!-- OPTIONS -->
       <div class="options-grid">
         <div>
-          <div class="label-box">SELECT DELIMITER</div>
+          <div class="label-box">Choose delimiter</div>
           <select id="delimiter">
             <option value=";">SEMICOLON (;)</option>
             <option value=",">COMMA (,)</option>
@@ -417,7 +420,7 @@
           </select>
         </div>
         <div>
-          <div class="label-box">CUSTOM_VAL</div>
+          <div class="label-box">Custom delimiter</div>
           <input type="text" id="customDelimiter" placeholder="TYPE HERE...">
         </div>
       </div>
@@ -425,16 +428,16 @@
       <!-- CHECKBOX -->
       <div class="check-wrapper">
         <input type="checkbox" id="removeDuplicates" checked>
-        <label for="removeDuplicates">PURGE DUPLICATES (UNIQUE ONLY)</label>
+        <label for="removeDuplicates">Remove duplicate values (unique only)</label>
       </div>
 
       <!-- OUTPUT -->
       <div id="output" class="output-area">
-        <div class="label-box" style="margin-bottom:10px;">RESULT_BUFFER</div>
+        <div class="label-box" style="margin-bottom:10px;">Result output</div>
         <div id="outputContent" class="output-box"></div>
         <div class="btn-group" style="margin-top:15px;">
-          <button class="btn btn-success" onclick="copyManually()"><i class="far fa-copy"></i> COPY AGAIN</button>
-          <button class="btn btn-reset" onclick="clearOutputOnly()"><i class="fas fa-trash"></i> CLEAR</button>
+          <button class="btn btn-success" onclick="copyManually()"><i class="far fa-copy"></i> Copy again</button>
+          <button class="btn btn-reset" onclick="clearOutputOnly()"><i class="fas fa-trash"></i> Clear</button>
         </div>
       </div>
 
@@ -442,26 +445,26 @@
       <div class="stats-grid" id="stats">
         <div class="stat-card">
           <div class="stat-num" id="lineCount">0</div>
-          <div class="stat-desc">LINES</div>
+          <div class="stat-desc">Rows</div>
         </div>
         <div class="stat-card">
           <div class="stat-num" id="uniqueCount">0</div>
-          <div class="stat-desc">UNIQUE</div>
+          <div class="stat-desc">Unique</div>
         </div>
         <div class="stat-card">
           <div class="stat-num" id="resultLength">0</div>
-          <div class="stat-desc">CHARS</div>
+          <div class="stat-desc">Chars</div>
         </div>
         <div class="stat-card">
           <div class="stat-num" id="delimiterUsed">-</div>
-          <div class="stat-desc">DELIM</div>
+          <div class="stat-desc">Delimiter</div>
         </div>
       </div>
 
       <!-- ACTIONS -->
       <div class="btn-group">
-        <button class="btn btn-primary" onclick="processData()"><i class="fas fa-bolt"></i> EXECUTE PROCESS</button>
-        <button class="btn btn-warning" onclick="resetAll()"><i class="fas fa-undo"></i> SYSTEM REBOOT</button>
+        <button class="btn btn-primary" onclick="processData()"><i class="fas fa-bolt"></i> Process Data</button>
+        <button class="btn btn-warning" onclick="resetAll()"><i class="fas fa-undo"></i> Reset Form</button>
       </div>
     </div>
 
