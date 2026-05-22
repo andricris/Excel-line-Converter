@@ -355,6 +355,82 @@
       background-color: var(--excel-green) !important;
       font-weight: bold !important;
     }
+
+    /* --- FORMULA BAR --- */
+    .formula-bar-container {
+      margin-bottom: 20px;
+      background: var(--excel-soft);
+      padding: 12px;
+      border: var(--border-thin);
+      border-radius: 4px;
+    }
+
+    .formula-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--excel-green-dark);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .formula-bar {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border: var(--border-thin);
+      font-family: Consolas, monospace;
+      font-size: 0.9rem;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .formula-fx {
+      background: var(--excel-soft);
+      color: var(--excel-green);
+      font-weight: bold;
+      font-style: italic;
+      padding: 6px 12px;
+      border-right: var(--border-thin);
+      user-select: none;
+      font-size: 0.95rem;
+    }
+
+    .formula-box {
+      flex: 1;
+      padding: 6px 12px;
+      color: #101010;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow-x: auto;
+      background: #ffffff;
+    }
+
+    .formula-box code {
+      color: #217346;
+    }
+
+    .formula-copy-btn {
+      background: var(--excel-soft);
+      border: none;
+      border-left: var(--border-thin);
+      color: var(--excel-text);
+      padding: 6px 12px;
+      font-family: Calibri, sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.1s;
+    }
+
+    .formula-copy-btn:hover {
+      background: var(--excel-accent);
+      color: var(--excel-green-dark);
+    }
   </style>
 </head>
 <body>
@@ -388,6 +464,22 @@
 
     <div class="main-card">
       <div class="card-label">Workbook Panel</div>
+
+      <!-- FORMULA BAR (Rumus Excel yang Digunakan) -->
+      <div class="formula-bar-container">
+        <div class="formula-label">
+          <i class="fas fa-info-circle"></i> Rumus Excel ekuivalen pada tools ini:
+        </div>
+        <div class="formula-bar">
+          <div class="formula-fx">fx</div>
+          <div class="formula-box" title="Klik 2x untuk menyalin rumus">
+            <code id="excelFormulaText">=TEXTJOIN(";";TRUE;UNIQUE(KOLOM AWAL:KOLOM AKHIR))</code>
+          </div>
+          <button class="formula-copy-btn" onclick="copyExcelFormula()" title="Salin rumus Excel">
+            <i class="far fa-copy"></i> Salin
+          </button>
+        </div>
+      </div>
 
       <!-- TABS -->
       <div class="tabs">
@@ -699,6 +791,28 @@
         (activeTab === "dirty" ? dirtyInputEl : inputEl).focus();
       };
     });
+
+    async function copyExcelFormula() {
+      const formula = document.getElementById("excelFormulaText").textContent;
+      try {
+        await navigator.clipboard.writeText(formula);
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Rumus disalin!',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      } catch (e) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal menyalin',
+          text: 'Silakan salin secara manual.',
+          timer: 1500
+        });
+      }
+    }
 
     lineCountEl.textContent = uniqueCountEl.textContent = resultLengthEl.textContent = "0";
     delimiterUsedEl.textContent = "-";
